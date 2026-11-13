@@ -1,5 +1,6 @@
 ---
 import { getUI } from '../../i18n/ui';
+import { site } from '../../data/site';
 import type { Locale } from '../../i18n/config';
 import { homePath } from '../../utils/url';
 import LanguageSwitcher from '../ui/LanguageSwitcher.astro';
@@ -24,9 +25,8 @@ const ui = getUI(locale);
 <header class="site-header" data-header>
   <div class="container site-header__inner">
     <a class="brand" href={`${homePath(locale)}#top`}>
-      <span class="brand__mark serif" aria-hidden="true">
-      </span>
       <span class="brand__name eyebrow">{ui.meta.siteName}</span>
+      <span class="brand__mobile-name eyebrow">{site.name}</span>
     </a>
 
     <div class="site-header__actions">
@@ -96,17 +96,12 @@ const ui = getUI(locale);
     min-height: 44px;
   }
 
-  .brand__mark {
-    font-size: 1.65rem;
-    line-height: 1;
-    letter-spacing: -0.06em;
+  .brand__mobile-name {
+    display: none;
   }
 
-  .brand__dot {
-    color: var(--color-accent);
-  }
-
-  .brand__name {
+  .brand__name,
+  .brand__mobile-name {
     color: var(--color-text-muted-light);
     font-size: var(--text-caption);
     letter-spacing: 0.08em;
@@ -150,6 +145,17 @@ const ui = getUI(locale);
     .brand__name,
     .header-contact {
       display: none;
+    }
+
+    .brand__mobile-name {
+      display: inline;
+      font-size: 0.625rem;
+      letter-spacing: 0.02em;
+      white-space: normal;
+    }
+
+    .site-header__actions {
+      flex-shrink: 0;
     }
   }
 
