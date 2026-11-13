@@ -1,0 +1,218 @@
+---
+import type { Locale } from '../../i18n/config';
+import { getUI } from '../../i18n/ui';
+import type { CollectionEntry } from 'astro:content';
+import { projectPath, withBase } from '../../utils/url';
+import ProjectCover from './ProjectCover.astro';
+import Tag from '../ui/Tag.astro';
+import Icon from '../ui/Icon.astro';
+import { formatPeriod } from '../../utils/dates';
+
+interface Props {
+  locale: Locale;
+  project: CollectionEntry<'projects'>;
+  index: string;
+  featured?: boolean;
+  class?: string;
+}
+
+const { locale, project, index, featured = false, class: className } =
+  Astro.props;
+const ui = getUI(locale);
+const copy = project.data.copy[locale];
+const externalUrl = project.data.externalUrl;
+const isExternal = Boolean(externalUrl);
+const href = externalUrl ?? projectPath(locale, project.id);
+
+const cover = project.data.cover
+  ? {
+      src: withBase(project.data.cover.src),
+      alt: project.data.cover.alt[locale],
+      width: project.data.cover.width,
+      height: project.data.cover.height,
+    }
+  : undefined;
+
+const categoryLabels: Record<string, string> = {
+  'web-application': ui.categories.webApplication,
+  'backend-development': ui.categories.backendDevelopment,
+  'frontend-development': ui.categories.frontendDevelopment,
+  'personal-project': ui.categories.personalProject,
+  'academic-project': ui.categories.academicProject,
+};
+
+const category = project.data.category
+  ? categoryLabels[project.data.category]
+  : ui.labels.project;
+---
+
+<article class:list={['project-card', className]} data-reveal>
+  <ProjectCover
+    title={copy.title}
+    index={index}
+    year={project.data.year}
+    label={ui.labels.caseStudy}
+    category={category}
+    technologies={project.data.technologies}
+    variant={featured ? 'featured' : 'default'}
+    cover={cover}
+    previewUrl={externalUrl}
+  />
+
+  <div class="project-card__body">
+    <div class="project-card__meta">
+      <span class="eyebrow">
+        {ui.labels.project} {index} — {category}
+      </span>
+      <span class="eyebrow">
+        {project.data.period
+          ? formatPeriod(project.data.period, locale, ui.labels.present)
+          : project.data.year}
+      </span>
+    </div>
+
+    <h3 class:list={['project-card__title', featured ? 'heading-lg' : 'heading-md']}>
+      <a
+        class="project-card__link"
+        href={href}
+        {...(isExternal
+          ? { target: '_blank', rel: 'noopener noreferrer' }
+          : {})}
+      >
+        {copy.title}
+        {isExternal && (
+          <>
+            {' '}
+            <span class="u-visually-hidden">
+              ({ui.labels.externalLink})
+            </span>
+          </>
+        )}
+      </a>
+    </h3>
+
+    <p class="project-card__summary">{copy.summary}</p>
+
+    <div class="project-card__footer">
+      <ul class="project-card__tags">
+        {
+          project.data.technologies.slice(0, 4).map((tech) => (
+            <li>
+              <Tag>{tech}</Tag>
+            </li>
+          ))
+        }
+      </ul>
+
+      <span class="project-card__cta text-link">
+        {isExternal
+          ? ui.actions.visitWebsite
+          : featured
+            ? ui.actions.readCaseStudy
+            : ui.actions.viewProject}
+        <Icon name={isExternal ? 'arrow-up-right' : 'arrow-right'} size={16} />
+      </span>
+    </div>
+  </div>
+</article>
+
+<style>
+  .project-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  .project-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .project-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-2) var(--space-5);
+    color: var(--muted);
+  }
+
+  .project-card__title a {
+    color: var(--text);
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 0% 1px;
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    transition:
+      color var(--duration-normal) var(--ease-standard),
+      background-size var(--duration-medium) var(--ease-out);
+  }
+
+  .project-card__title a:hover {
+    color: var(--accent-text);
+  }
+
+  .project-card:hover .project-card__title a {
+    background-size: 100% 1px;
+  }
+
+  .project-card__link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+  }
+
+  .project-card__summary {
+    max-width: 56ch;
+    color: var(--muted);
+    font-size: var(--text-body-sm);
+    line-height: 1.6;
+    text-wrap: pretty;
+  }
+
+  .project-card__footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-top: var(--space-2);
+  }
+
+  .project-card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .project-card__cta {
+    color: var(--text);
+  }
+
+  .project-card:hover .project-card__cta {
+    color: var(--accent-text);
+  }
+
+  .project-card:hover .project-card__cta :global(svg) {
+    transform: translateX(5px);
+  }
+
+  .project-card__cta :global(svg) {
+    transition: transform var(--duration-normal) var(--ease-out);
+  }
+
+  .project-card:focus-within .project-card__title a {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 4px;
+  }
+
+  @media (max-width: 640px) {
+    .project-card__footer {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+</style>

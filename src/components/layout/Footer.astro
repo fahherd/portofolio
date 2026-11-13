@@ -1,0 +1,240 @@
+---
+import { getUI } from '../../i18n/ui';
+import type { Locale } from '../../i18n/config';
+import { site } from '../../data/site';
+import { navItems } from '../../data/navigation';
+import { homePath } from '../../utils/url';
+import Icon from '../ui/Icon.astro';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const ui = getUI(locale);
+const year = new Date().getFullYear();
+
+const socialLinks = [
+  { label: 'GitHub', href: site.github, icon: 'github' as const },
+  { label: 'LinkedIn', href: site.linkedin, icon: 'linkedin' as const },
+];
+---
+
+<footer class="site-footer section--dark">
+  <div class="container">
+    <div class="site-footer__top">
+      <div class="site-footer__identity">
+        <span class="eyebrow site-footer__index">{ui.footer.closing}</span>
+        <p class="site-footer__name display">
+          Fajar<br />
+          <em>Herdiansyah</em><span class="site-footer__dot">.</span>
+        </p>
+      </div>
+
+      <div class="site-footer__columns">
+        <nav class="site-footer__column" aria-label={ui.a11y.footerNav}>
+          <p class="eyebrow text-muted">{ui.footer.navigation}</p>
+          <ul>
+            {
+              navItems.slice(1).map((item) => (
+                <li>
+                  <a href={`${homePath(locale)}${item.href}`}>
+                    {ui.nav[item.labelKey]}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+
+        <div class="site-footer__column">
+          <p class="eyebrow text-muted">{ui.footer.elsewhere}</p>
+          <ul>
+            {
+              socialLinks.map((item) => (
+                <li>
+                  <a
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {item.label}
+                    <Icon name="arrow-up-right" size={14} />
+                    <span class="u-visually-hidden">
+                      ({ui.labels.externalLink})
+                    </span>
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+
+        <div class="site-footer__column site-footer__column--contact">
+          <p class="eyebrow text-muted">{ui.footer.contact}</p>
+          <a class="site-footer__email" href={`mailto:${site.email}`}>
+            {site.email}
+          </a>
+          <p class="site-footer__location">{site.location}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="site-footer__bottom">
+      <p class="eyebrow">
+        © {year} {site.name}
+      </p>
+      <p class="eyebrow site-footer__rights">{ui.footer.allRightsReserved}</p>
+      <a class="site-footer__top-link eyebrow" href="#top">
+        {ui.actions.backToTop}
+        <Icon name="arrow-up" size={14} />
+      </a>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    padding-block: clamp(4rem, 9vw, 9rem) var(--space-8);
+    border-top: 1px solid var(--border-dark);
+  }
+
+  .site-footer__top {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: clamp(3rem, 6vw, 7rem);
+    align-items: start;
+    padding-bottom: clamp(3rem, 6vw, 6rem);
+  }
+
+  .site-footer__index {
+    display: block;
+    margin-bottom: var(--space-8);
+    color: var(--color-text-muted-light);
+  }
+
+  .site-footer__name {
+    font-size: clamp(3.25rem, 8vw, 7.5rem);
+    line-height: 0.88;
+    letter-spacing: -0.045em;
+  }
+
+  .site-footer__dot {
+    color: var(--color-accent);
+  }
+
+  .site-footer__columns {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-10) var(--space-8);
+    padding-top: clamp(1rem, 3vw, 4rem);
+  }
+
+  .site-footer__column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .site-footer__column ul {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .site-footer__column a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 32px;
+    color: var(--color-text-light);
+    font-size: var(--text-body-sm);
+    transition: color var(--duration-fast) var(--ease-standard);
+  }
+
+  .site-footer__column a:hover {
+    color: var(--color-accent);
+  }
+
+  .site-footer__column--contact {
+    grid-column: 1 / -1;
+    gap: var(--space-3);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--border-dark);
+  }
+
+  .site-footer__email {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 2.4vw, 2rem);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  .site-footer__location {
+    color: var(--color-text-muted-light);
+    font-family: var(--font-mono);
+    font-size: var(--text-caption);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+  }
+
+  .site-footer__bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-5);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--border-dark);
+    color: var(--color-text-muted-light);
+  }
+
+  .site-footer__rights {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .site-footer__top-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 44px;
+    color: var(--color-text-light);
+    transition: color var(--duration-fast) var(--ease-standard);
+  }
+
+  .site-footer__top-link:hover {
+    color: var(--color-accent);
+  }
+
+  @media (max-width: 1024px) {
+    .site-footer__top {
+      grid-template-columns: 1fr;
+      gap: var(--space-12);
+    }
+
+    .site-footer__columns {
+      padding-top: 0;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .site-footer__columns {
+      grid-template-columns: 1fr;
+      gap: var(--space-8);
+    }
+
+    .site-footer__bottom {
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      gap: var(--space-2) var(--space-5);
+    }
+
+    .site-footer__rights {
+      margin: 0;
+    }
+
+    .site-footer__top-link {
+      margin-left: auto;
+    }
+  }
+</style>

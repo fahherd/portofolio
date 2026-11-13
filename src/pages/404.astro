@@ -1,0 +1,158 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getUI } from '../i18n/ui';
+import { withBase } from '../utils/url';
+import Icon from '../components/ui/Icon.astro';
+
+const locale = 'id' as const;
+const ui = getUI(locale);
+
+const currentPath = withBase('id/');
+const alternatePath = withBase('en/');
+---
+
+<BaseLayout
+  locale={locale}
+  title={ui.meta.notFoundTitle}
+  description={ui.meta.notFoundDescription}
+  currentPath={currentPath}
+  alternatePath={alternatePath}
+  noindex
+>
+  <section class="not-found section--dark">
+    <div class="container not-found__inner">
+      <p class="eyebrow not-found__eyebrow">{ui.notFound.eyebrow}</p>
+
+      <p class="not-found__code display" aria-hidden="true">404</p>
+
+      <div class="not-found__body">
+        <h1 class="not-found__title display display--md">
+          {ui.notFound.title}
+        </h1>
+        <p class="not-found__text body-lg">{ui.notFound.body}</p>
+
+        <div class="not-found__actions">
+          <a class="not-found__action" href={withBase('id/')}>
+            {ui.notFound.home}
+            <Icon name="arrow-right" size={18} />
+          </a>
+          <a class="not-found__action" href={`${withBase('id/')}#work`}>
+            {ui.notFound.work}
+            <Icon name="arrow-right" size={18} />
+          </a>
+        </div>
+      </div>
+
+      <div class="not-found__footer">
+        <p class="eyebrow">Fajar Herdiansyah — Bekasi, Indonesia</p>
+        <p class="eyebrow">fahherd@gmail.com</p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 100svh;
+    padding-block: calc(var(--header-height) + var(--space-12)) var(--space-12);
+    overflow: hidden;
+    background:
+      radial-gradient(
+        80% 70% at 90% 0%,
+        rgba(232, 173, 50, 0.12),
+        transparent 60%
+      ),
+      var(--color-dark-950);
+  }
+
+  .not-found__inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2rem, 5vw, 4rem);
+  }
+
+  .not-found__eyebrow {
+    color: var(--muted);
+  }
+
+  .not-found__code {
+    position: absolute;
+    right: -0.04em;
+    bottom: -0.3em;
+    z-index: -1;
+    font-size: clamp(14rem, 40vw, 36rem);
+    line-height: 0.7;
+    letter-spacing: -0.07em;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(243, 241, 236, 0.08);
+  }
+
+  .not-found__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    max-width: 40rem;
+  }
+
+  .not-found__title {
+    font-size: clamp(2.5rem, 5.5vw, 4.5rem);
+  }
+
+  .not-found__text {
+    color: var(--muted);
+    max-width: 44ch;
+  }
+
+  .not-found__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4) var(--space-8);
+    margin-top: var(--space-4);
+  }
+
+  .not-found__action {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 44px;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    transition: color var(--duration-fast) var(--ease-standard);
+  }
+
+  .not-found__action:hover {
+    color: var(--accent-text);
+  }
+
+  .not-found__action :global(svg) {
+    transition: transform var(--duration-normal) var(--ease-out);
+  }
+
+  .not-found__action:hover :global(svg) {
+    transform: translateX(5px);
+  }
+
+  .not-found__footer {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-top: clamp(3rem, 8vw, 8rem);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--border-dark);
+    color: var(--muted);
+  }
+
+  @media (max-width: 640px) {
+    .not-found__footer {
+      flex-direction: column;
+    }
+  }
+</style>

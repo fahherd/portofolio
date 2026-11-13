@@ -1,0 +1,177 @@
+---
+import { getUI } from '../../i18n/ui';
+import type { Locale } from '../../i18n/config';
+import { homePath } from '../../utils/url';
+import LanguageSwitcher from '../ui/LanguageSwitcher.astro';
+import Icon from '../ui/Icon.astro';
+
+interface Props {
+  locale: Locale;
+  currentPath: string;
+  alternatePath: string;
+  preserveHash?: boolean;
+}
+
+const {
+  locale,
+  currentPath,
+  alternatePath,
+  preserveHash = false,
+} = Astro.props;
+const ui = getUI(locale);
+---
+
+<header class="site-header" data-header>
+  <div class="container site-header__inner">
+    <a class="brand" href={`${homePath(locale)}#top`}>
+      <span class="brand__mark serif" aria-hidden="true">
+      </span>
+      <span class="brand__name eyebrow">{ui.meta.siteName}</span>
+    </a>
+
+    <div class="site-header__actions">
+      <LanguageSwitcher
+        locale={locale}
+        currentPath={currentPath}
+        alternatePath={alternatePath}
+        preserveHash={preserveHash}
+        class="site-header__language"
+      />
+
+      <a class="header-contact eyebrow" href={`${homePath(locale)}#contact`}>
+        {ui.nav.contact}
+      </a>
+
+      <button
+        class="menu-toggle"
+        type="button"
+        data-menu-open
+        aria-controls="site-menu"
+        aria-expanded="false"
+        aria-label={ui.labels.openMenu}
+      >
+        <span class="menu-toggle__label eyebrow">{ui.nav.menu}</span>
+        <Icon name="menu" size={19} />
+      </button>
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: fixed;
+    inset-inline: 0;
+    top: 0;
+    z-index: var(--z-header);
+    color: var(--color-text-light);
+    background: linear-gradient(
+      to bottom,
+      rgba(16, 16, 16, 0.55),
+      rgba(16, 16, 16, 0)
+    );
+    transition:
+      background-color var(--duration-normal) var(--ease-standard),
+      border-color var(--duration-normal) var(--ease-standard),
+      backdrop-filter var(--duration-normal) var(--ease-standard);
+  }
+
+  .site-header.is-scrolled {
+    background: rgba(16, 16, 16, 0.88);
+    border-bottom: 1px solid var(--border-dark);
+    backdrop-filter: blur(14px);
+  }
+
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-6);
+    height: var(--header-height);
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: 44px;
+  }
+
+  .brand__mark {
+    font-size: 1.65rem;
+    line-height: 1;
+    letter-spacing: -0.06em;
+  }
+
+  .brand__dot {
+    color: var(--color-accent);
+  }
+
+  .brand__name {
+    color: var(--color-text-muted-light);
+    font-size: var(--text-caption);
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
+
+  .site-header__actions {
+    display: flex;
+    align-items: center;
+    gap: clamp(1rem, 2.4vw, 2.25rem);
+  }
+
+  .header-contact {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--color-text-light);
+    transition: color var(--duration-fast) var(--ease-standard);
+  }
+
+  .header-contact:hover {
+    color: var(--color-accent);
+  }
+
+  .menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 44px;
+    padding-left: var(--space-4);
+    border-left: 1px solid var(--border-dark);
+    color: var(--color-text-light);
+    transition: color var(--duration-fast) var(--ease-standard);
+  }
+
+  .menu-toggle:hover {
+    color: var(--color-accent);
+  }
+
+  @media (max-width: 900px) {
+    .brand__name,
+    .header-contact {
+      display: none;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .site-header__inner {
+      gap: var(--space-4);
+    }
+
+    .site-header__actions {
+      gap: var(--space-3);
+    }
+
+    .menu-toggle {
+      padding-left: var(--space-3);
+    }
+
+    .menu-toggle__label {
+      display: none;
+    }
+
+    .site-header__language {
+      font-size: var(--text-caption);
+    }
+  }
+</style>

@@ -1,0 +1,117 @@
+---
+import Icon from './Icon.astro';
+
+interface Props {
+  href?: string;
+  variant?: 'primary' | 'secondary' | 'accent';
+  size?: 'sm' | 'md' | 'lg';
+  external?: boolean;
+  externalLabel?: string;
+  icon?: 'arrow-right' | 'arrow-up-right' | 'arrow-down' | 'external' | 'mail' | 'github';
+  class?: string;
+}
+
+const {
+  href,
+  variant = 'primary',
+  size = 'md',
+  external = false,
+  externalLabel,
+  icon = 'arrow-right',
+  class: className,
+} = Astro.props;
+
+const classes = ['button', `button--${variant}`, `button--${size}`, className];
+---
+
+{
+  href ? (
+    <a
+      class:list={classes}
+      href={href}
+      target={external ? '_blank' : undefined}
+      rel={external ? 'noopener noreferrer' : undefined}
+    >
+      <span><slot /></span>
+      <Icon name={icon} size={size === 'lg' ? 20 : 17} />
+      {external && externalLabel && (
+        <span class="u-visually-hidden"> ({externalLabel})</span>
+      )}
+    </a>
+  ) : (
+    <button class:list={classes} type="button">
+      <span><slot /></span>
+      <Icon name={icon} size={size === 'lg' ? 20 : 17} />
+    </button>
+  )
+}
+
+<style>
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
+    min-height: 44px;
+    padding-inline: var(--space-5);
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    line-height: 1;
+    text-transform: uppercase;
+    transition:
+      background-color var(--duration-normal) var(--ease-standard),
+      border-color var(--duration-normal) var(--ease-standard),
+      color var(--duration-normal) var(--ease-standard);
+  }
+
+  .button :global(svg) {
+    transition: transform var(--duration-normal) var(--ease-out);
+  }
+
+  .button:hover :global(svg) {
+    transform: translateX(4px);
+  }
+
+  .button--sm {
+    min-height: 36px;
+    padding-inline: var(--space-4);
+  }
+
+  .button--lg {
+    min-height: 52px;
+    padding-inline: var(--space-6);
+  }
+
+  .button--primary {
+    background: var(--text);
+    color: var(--surface);
+  }
+
+  .button--primary:hover {
+    background: var(--color-accent);
+    color: var(--color-dark-950);
+  }
+
+  .button--secondary {
+    border-color: var(--border);
+    color: var(--text);
+  }
+
+  .button--secondary:hover {
+    border-color: var(--accent-text);
+    color: var(--accent-text);
+  }
+
+  .button--accent {
+    background: var(--color-accent);
+    color: var(--color-dark-950);
+  }
+
+  .button--accent:hover {
+    background: var(--color-accent-hover);
+  }
+</style>

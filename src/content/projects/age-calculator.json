@@ -1,0 +1,23 @@
+{
+  "kind": "repository",
+  "status": "verified",
+  "featured": false,
+  "order": 2,
+  "year": 2025,
+  "technologies": ["PHP"],
+  "links": {
+    "github": "https://github.com/fahherd/age-calculator"
+  },
+  "gallery": [],
+  "caseStudyStatus": "pending",
+  "copy": {
+    "id": {
+      "title": "Age Calculator",
+      "summary": "Aplikasi PHP sederhana untuk menghitung usia."
+    },
+    "en": {
+      "title": "Age Calculator",
+      "summary": "A simple PHP application for calculating age."
+    }
+  }
+}

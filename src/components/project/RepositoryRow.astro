@@ -1,0 +1,185 @@
+---
+import type { Locale } from '../../i18n/config';
+import { getUI } from '../../i18n/ui';
+import type { CollectionEntry } from 'astro:content';
+import Icon from '../ui/Icon.astro';
+
+interface Props {
+  locale: Locale;
+  repositories: CollectionEntry<'projects'>[];
+  class?: string;
+}
+
+const { locale, repositories, class: className } = Astro.props;
+const ui = getUI(locale);
+---
+
+<ul class:list={['repo-list', className]}>
+  {
+    repositories.map((repo, index) => {
+      const copy = repo.data.copy[locale];
+      const github = repo.data.links.github;
+      const live = repo.data.links.live;
+      const primaryLink = live ?? github;
+      const liveLabel = github ? ui.actions.liveDemo : ui.actions.visitWebsite;
+      return (
+        <li class="repo-row" data-reveal>
+          <span class="repo-row__index eyebrow">
+            {String(index + 1).padStart(2, '0')}
+          </span>
+
+          <div class="repo-row__main">
+            <h3 class="repo-row__title heading-md">
+              {primaryLink ? (
+                <a
+                  href={primaryLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {copy.title}
+                  <Icon name="arrow-up-right" size={18} />
+                  <span class="u-visually-hidden">
+                    {' '}({ui.labels.externalLink})
+                  </span>
+                </a>
+              ) : (
+                copy.title
+              )}
+            </h3>
+            <p class="repo-row__summary">{copy.summary}</p>
+          </div>
+
+          <div class="repo-row__links">
+            {github && (
+              <a
+                class="repo-row__link eyebrow"
+                href={github}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {ui.labels.repository}
+                <Icon name="arrow-up-right" size={14} />
+                <span class="u-visually-hidden">
+                  {' '}({ui.labels.externalLink})
+                </span>
+              </a>
+            )}
+            {live && (
+              <a
+                class="repo-row__link eyebrow"
+                href={live}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {liveLabel}
+                <Icon name="external" size={14} />
+                <span class="u-visually-hidden">
+                  {' '}({ui.labels.externalLink})
+                </span>
+              </a>
+            )}
+          </div>
+        </li>
+      );
+    })
+  }
+</ul>
+
+<style>
+  .repo-list {
+    border-top: 1px solid var(--border);
+  }
+
+  .repo-row {
+    display: grid;
+    grid-template-columns: 3rem minmax(0, 1fr) auto;
+    gap: var(--space-5) var(--space-6);
+    align-items: start;
+    padding-block: var(--space-6);
+    border-bottom: 1px solid var(--border);
+    transition: background-color var(--duration-normal) var(--ease-standard);
+  }
+
+  .repo-row:hover {
+    background: rgba(243, 241, 236, 0.025);
+  }
+
+  .repo-row__index {
+    padding-top: 0.55em;
+    color: var(--muted);
+  }
+
+  .repo-row__main {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .repo-row__title a {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    transition: color var(--duration-fast) var(--ease-standard);
+  }
+
+  .repo-row__title a:hover {
+    color: var(--accent-text);
+  }
+
+  .repo-row__summary {
+    max-width: 48ch;
+    color: var(--muted);
+    font-size: var(--text-body-sm);
+    line-height: 1.55;
+  }
+
+  .repo-row__links {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--space-1);
+  }
+
+  .repo-row__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 32px;
+    color: var(--text);
+    transition: color var(--duration-fast) var(--ease-standard);
+  }
+
+  .repo-row__link:hover {
+    color: var(--accent-text);
+  }
+
+  @media (max-width: 1024px) {
+    .repo-row {
+      grid-template-columns: 2rem minmax(0, 1fr) auto;
+    }
+
+    .repo-row__links {
+      grid-column: 3;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .repo-row {
+      grid-template-columns: 1.75rem minmax(0, 1fr);
+      gap: var(--space-3);
+    }
+
+    .repo-row__links {
+      grid-column: 2;
+      padding-top: var(--space-2);
+    }
+
+    .repo-row__links {
+      grid-row: auto;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      gap: var(--space-4);
+    }
+  }
+</style>

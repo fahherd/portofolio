@@ -1,0 +1,72 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import type { Locale } from '../../i18n/config';
+import { getUI } from '../../i18n/ui';
+import SectionHeading from '../ui/SectionHeading.astro';
+import ProjectGrid from '../project/ProjectGrid.astro';
+import RepositoryRow from '../project/RepositoryRow.astro';
+
+interface Props {
+  locale: Locale;
+  caseStudies: CollectionEntry<'projects'>[];
+  repositories: CollectionEntry<'projects'>[];
+}
+
+const { locale, caseStudies, repositories } = Astro.props;
+const ui = getUI(locale);
+---
+
+<section id="work" class="section section--dark work">
+  <div class="container">
+    <SectionHeading
+      number="02"
+      label={ui.sections.work.label}
+      title={ui.sections.work.title}
+      lede={ui.sections.work.lede}
+      wide
+    />
+
+    <ProjectGrid locale={locale} projects={caseStudies} />
+
+    {
+      repositories.length > 0 && (
+        <div class="work__repos">
+          <div class="work__repos-head">
+            <p class="eyebrow">{ui.labels.publicRepositories}</p>
+            <span class="eyebrow work__count">
+              ({String(repositories.length).padStart(2, '0')})
+            </span>
+          </div>
+          <RepositoryRow locale={locale} repositories={repositories} />
+        </div>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .work {
+    border-top: 1px solid var(--border-dark);
+  }
+
+  .work__repos {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+    margin-top: clamp(4rem, 8vw, 8rem);
+    padding-top: clamp(2.5rem, 4vw, 4rem);
+    border-top: 1px solid var(--border-dark);
+  }
+
+  .work__repos-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-4);
+    color: var(--muted);
+  }
+
+  .work__count {
+    color: var(--accent-text);
+  }
+</style>

@@ -1,0 +1,350 @@
+---
+import { getUI } from '../../i18n/ui';
+import type { Locale } from '../../i18n/config';
+import { site } from '../../data/site';
+import { navItems } from '../../data/navigation';
+import { homePath } from '../../utils/url';
+import LanguageSwitcher from '../ui/LanguageSwitcher.astro';
+import Icon from '../ui/Icon.astro';
+
+interface Props {
+  locale: Locale;
+  currentPath: string;
+  alternatePath: string;
+  preserveHash?: boolean;
+}
+
+const {
+  locale,
+  currentPath,
+  alternatePath,
+  preserveHash = false,
+} = Astro.props;
+const ui = getUI(locale);
+---
+
+<dialog
+  id="site-menu"
+  class="menu"
+  data-menu
+  aria-label={ui.a11y.menuDialog}
+>
+  <div class="menu__inner container">
+    <div class="menu__top">
+      <a class="menu__brand" href={`${homePath(locale)}#top`} data-menu-link>
+        <span class="serif" aria-hidden="true">FH<span class="menu__dot">.</span></span>
+        <span class="eyebrow">{ui.meta.siteName}</span>
+      </a>
+
+      <button
+        class="menu__close"
+        type="button"
+        data-menu-close
+        aria-label={ui.labels.closeMenu}
+      >
+        <span class="eyebrow">{ui.nav.close}</span>
+        <Icon name="close" size={20} />
+      </button>
+    </div>
+
+    <div class="menu__body">
+      <nav class="menu__nav-wrap" aria-label={ui.a11y.menuDialog}>
+        <ol class="menu__nav">
+          {
+            navItems.map((item, index) => (
+              <li style={`--menu-index:${index}`}>
+                <a href={`${homePath(locale)}${item.href}`} data-menu-link>
+                  <span class="menu__index eyebrow">
+                    {String(index + 1).padStart(2, '0')}
+                  </span>
+                  <span class="menu__label serif">
+                    {ui.nav[item.labelKey]}
+                  </span>
+                  <Icon name="arrow-up-right" size={22} class="menu__arrow" />
+                </a>
+              </li>
+            ))
+          }
+        </ol>
+      </nav>
+
+      <aside class="menu__aside">
+        <div class="menu__aside-block">
+          <p class="eyebrow text-muted">{ui.footer.contact}</p>
+          <a class="menu__aside-link" href={`mailto:${site.email}`}>
+            {site.email}
+          </a>
+        </div>
+
+        <div class="menu__aside-block">
+          <p class="eyebrow text-muted">{ui.footer.elsewhere}</p>
+          <a
+            class="menu__aside-link"
+            href={site.github}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            GitHub <Icon name="arrow-up-right" size={15} />
+            <span class="u-visually-hidden"> ({ui.labels.externalLink})</span>
+          </a>
+          <a
+            class="menu__aside-link"
+            href={site.linkedin}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            LinkedIn <Icon name="arrow-up-right" size={15} />
+            <span class="u-visually-hidden"> ({ui.labels.externalLink})</span>
+          </a>
+        </div>
+
+        <div class="menu__aside-block">
+          <p class="eyebrow text-muted">{ui.labels.languageLabel}</p>
+          <LanguageSwitcher
+            locale={locale}
+            currentPath={currentPath}
+            alternatePath={alternatePath}
+            preserveHash={preserveHash}
+          />
+        </div>
+      </aside>
+    </div>
+
+    <div class="menu__footer">
+      <p class="eyebrow text-muted">{site.location}</p>
+      <p class="eyebrow text-muted">{ui.footer.closing}</p>
+    </div>
+  </div>
+</dialog>
+
+<style>
+  .menu {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: var(--color-dark-950);
+    color: var(--color-text-light);
+    opacity: 0;
+    transform: translateY(-1rem);
+    transition:
+      opacity var(--duration-normal) var(--ease-standard),
+      transform var(--duration-normal) var(--ease-out);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .menu.is-open {
+    opacity: 1;
+    transform: none;
+  }
+
+  .menu::backdrop {
+    background: rgba(16, 16, 16, 0.72);
+  }
+
+  .menu__inner {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    padding-block: var(--space-4) var(--space-10);
+  }
+
+  .menu__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-6);
+    min-height: var(--header-height);
+    border-bottom: 1px solid var(--border-dark);
+  }
+
+  .menu__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: 44px;
+  }
+
+  .menu__brand .serif {
+    font-size: 1.65rem;
+    line-height: 1;
+    letter-spacing: -0.06em;
+  }
+
+  .menu__brand .eyebrow {
+    color: var(--color-text-muted-light);
+    font-size: var(--text-caption);
+    letter-spacing: 0.08em;
+  }
+
+  .menu__dot {
+    color: var(--color-accent);
+  }
+
+  .menu__close {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 44px;
+    color: var(--color-text-light);
+    transition: color var(--duration-fast) var(--ease-standard);
+  }
+
+  .menu__close:hover {
+    color: var(--color-accent);
+  }
+
+  .menu__body {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 3fr);
+    gap: clamp(2rem, 6vw, 6rem);
+    flex: 1;
+    padding-block: clamp(2rem, 5vw, 5rem);
+  }
+
+  .menu__nav {
+    display: grid;
+  }
+
+  .menu__nav li {
+    border-bottom: 1px solid var(--border-dark);
+  }
+
+  .menu.is-open .menu__nav li {
+    animation: menu-link-in var(--duration-medium) var(--ease-out) both;
+    animation-delay: calc(var(--menu-index) * 45ms + 100ms);
+  }
+
+  .menu__nav a {
+    display: flex;
+    align-items: baseline;
+    gap: clamp(1rem, 2vw, 2rem);
+    min-height: 72px;
+    padding-block: clamp(0.75rem, 1.4vw, 1.25rem);
+    color: var(--color-text-light);
+    transition: color var(--duration-fast) var(--ease-standard);
+  }
+
+  .menu__nav a:hover,
+  .menu__nav a:focus-visible {
+    color: var(--color-accent);
+  }
+
+  .menu__index {
+    flex: 0 0 2.25rem;
+    color: var(--color-text-muted-light);
+    font-size: var(--text-caption);
+  }
+
+  .menu__label {
+    font-size: clamp(2.4rem, 5.8vw, 5rem);
+    line-height: 0.95;
+    letter-spacing: -0.035em;
+  }
+
+  .menu__arrow {
+    margin-left: auto;
+    opacity: 0;
+    transform: translate(-6px, 6px);
+    transition:
+      opacity var(--duration-normal) var(--ease-out),
+      transform var(--duration-normal) var(--ease-out);
+  }
+
+  .menu__nav a:hover .menu__arrow,
+  .menu__nav a:focus-visible .menu__arrow {
+    opacity: 1;
+    transform: none;
+  }
+
+  .menu__aside {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-10);
+    padding-top: var(--space-2);
+  }
+
+  .menu__aside-block {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+
+  .menu__aside-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 36px;
+    color: var(--color-text-light);
+    font-size: var(--text-body-sm);
+    transition: color var(--duration-fast) var(--ease-standard);
+  }
+
+  .menu__aside-link:hover {
+    color: var(--color-accent);
+  }
+
+  .menu__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-6);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--border-dark);
+  }
+
+  .menu__footer .eyebrow {
+    color: var(--color-text-muted-light);
+  }
+
+  @media (max-width: 900px) {
+    .menu__body {
+      grid-template-columns: 1fr;
+      gap: var(--space-10);
+    }
+
+    .menu__aside {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-8);
+      padding-bottom: var(--space-8);
+      border-top: 1px solid var(--border-dark);
+      padding-top: var(--space-8);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .menu__brand .eyebrow {
+      display: none;
+    }
+
+    .menu__nav a {
+      min-height: 64px;
+    }
+
+    .menu__label {
+      font-size: clamp(2.3rem, 11vw, 3.5rem);
+    }
+
+    .menu__arrow {
+      display: none;
+    }
+
+    .menu__aside {
+      grid-template-columns: 1fr;
+    }
+
+    .menu__footer {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--space-2);
+    }
+  }
+</style>

@@ -1,0 +1,134 @@
+---
+import type { Locale } from '../../i18n/config';
+import { getUI } from '../../i18n/ui';
+import { skillGroups } from '../../data/cv';
+import SectionHeading from '../ui/SectionHeading.astro';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const ui = getUI(locale);
+---
+
+<section id="expertise" class="section section--dark-elevated expertise">
+  <div class="container">
+    <SectionHeading
+      number="03"
+      label={ui.sections.expertise.label}
+      title={ui.sections.expertise.title}
+      lede={ui.sections.expertise.lede}
+      wide
+    />
+
+    <ul class="expertise__list">
+      {
+        skillGroups.map((group, index) => (
+          <li class="expertise__row" data-reveal>
+            <span class="eyebrow expertise__index">
+              {String(index + 1).padStart(2, '0')}
+            </span>
+
+            <h3 class="expertise__title serif">{group.title[locale]}</h3>
+
+            <ul class="expertise__items">
+              {group.items.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .expertise {
+    border-top: 1px solid var(--border-dark);
+  }
+
+  .expertise__list {
+    border-top: 1px solid var(--border);
+  }
+
+  .expertise__row {
+    display: grid;
+    grid-template-columns: 3rem minmax(0, 3fr) minmax(0, 7fr);
+    gap: var(--space-5) var(--space-6);
+    align-items: baseline;
+    padding-block: clamp(1.5rem, 3vw, 2.5rem);
+    border-bottom: 1px solid var(--border);
+    transition: background-color var(--duration-normal) var(--ease-standard);
+  }
+
+  .expertise__row:hover {
+    background: rgba(243, 241, 236, 0.02);
+  }
+
+  .expertise__index {
+    color: var(--muted);
+  }
+
+  .expertise__title {
+    font-size: clamp(1.5rem, 2.4vw, 2rem);
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+  }
+
+  .expertise__items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-3);
+    color: var(--muted);
+    font-size: var(--text-body-md);
+    line-height: 1.4;
+  }
+
+  .expertise__items li {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--space-3);
+  }
+
+  .expertise__items li:not(:last-child)::after {
+    content: '/';
+    color: var(--color-dark-600);
+    font-family: var(--font-mono);
+    font-size: 0.8em;
+  }
+
+  .expertise__note {
+    display: flex;
+    gap: var(--space-3);
+    margin-top: clamp(2rem, 4vw, 3rem);
+    color: var(--muted);
+    max-width: 62ch;
+    white-space: normal;
+    line-height: 1.7;
+  }
+
+  @media (max-width: 768px) {
+    .expertise__row {
+      grid-template-columns: 2rem minmax(0, 1fr);
+      gap: var(--space-2) var(--space-4);
+    }
+
+    .expertise__items {
+      grid-column: 2;
+      padding-top: var(--space-2);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .expertise__items {
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .expertise__items li:not(:last-child)::after {
+      content: none;
+    }
+  }
+</style>

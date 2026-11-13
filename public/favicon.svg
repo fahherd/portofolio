@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <rect width="64" height="64" fill="#101010"/>
+  <path d="M0 0h64v1H0z" fill="#E8AD32"/>
+  <text x="29" y="44" text-anchor="middle" font-family="Georgia, FreeSerif, serif" font-size="34" letter-spacing="-2" fill="#F3F1EC">FH</text>
+  <circle cx="50" cy="41" r="3.5" fill="#E8AD32"/>
+</svg>

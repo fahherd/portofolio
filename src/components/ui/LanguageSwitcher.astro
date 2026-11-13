@@ -1,0 +1,102 @@
+---
+import {
+  localeLabels,
+  localeNames,
+  type Locale,
+} from '../../i18n/config';
+import { getUI } from '../../i18n/ui';
+
+interface Props {
+  locale: Locale;
+  currentPath: string;
+  alternatePath: string;
+  preserveHash?: boolean;
+  class?: string;
+}
+
+const {
+  locale,
+  currentPath,
+  alternatePath,
+  preserveHash = false,
+  class: className,
+} = Astro.props;
+
+const ui = getUI(locale);
+const paths: Record<Locale, string> =
+  locale === 'id'
+    ? { id: currentPath, en: alternatePath }
+    : { id: alternatePath, en: currentPath };
+---
+
+<div
+  class:list={['language-switcher', className]}
+  role="group"
+  aria-label={ui.a11y.languageSwitcher}
+>
+  {
+    (['id', 'en'] as const).map((item, index) => (
+      <>
+        {index > 0 && (
+          <span class="language-switcher__separator" aria-hidden="true">
+            /
+          </span>
+        )}
+        <a
+          class:list={[
+            'language-switcher__item',
+            { 'is-active': item === locale },
+          ]}
+          href={paths[item]}
+          hreflang={item}
+          lang={item}
+          aria-current={item === locale ? 'page' : undefined}
+          aria-label={
+            item === locale
+              ? localeNames[item]
+              : `${ui.labels.switchTo} ${localeNames[item]}`
+          }
+          data-locale-switch={item}
+          data-preserve-hash={preserveHash ? 'true' : 'false'}
+        >
+          {localeLabels[item]}
+        </a>
+      </>
+    ))
+  }
+</div>
+
+<style>
+  .language-switcher {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    min-height: 44px;
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    letter-spacing: var(--tracking-label);
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .language-switcher__item {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    padding-inline: var(--space-1);
+    color: var(--muted);
+    transition: color var(--duration-fast) var(--ease-standard);
+  }
+
+  .language-switcher__item:hover {
+    color: var(--text);
+  }
+
+  .language-switcher__item.is-active {
+    color: var(--accent-text);
+  }
+
+  .language-switcher__separator {
+    color: var(--border);
+  }
+</style>

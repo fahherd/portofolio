@@ -1,0 +1,76 @@
+---
+import type { Locale } from '../../i18n/config';
+import { getUI } from '../../i18n/ui';
+import Button from '../ui/Button.astro';
+import Icon from '../ui/Icon.astro';
+
+interface Props {
+  locale: Locale;
+  live?: string;
+  github?: string;
+  class?: string;
+}
+
+const { locale, live, github, class: className } = Astro.props;
+const ui = getUI(locale);
+const hasLinks = Boolean(live || github);
+---
+
+<div class:list={['project-links', className]}>
+  {
+    hasLinks ? (
+      <>
+        {live && (
+          <Button
+            href={live}
+            external
+            externalLabel={ui.labels.externalLink}
+            icon="arrow-up-right"
+          >
+            {ui.actions.liveDemo}
+          </Button>
+        )}
+        {github && (
+          <Button
+            href={github}
+            variant={live ? 'secondary' : 'primary'}
+            external
+            externalLabel={ui.labels.externalLink}
+            icon="github"
+          >
+            {ui.actions.viewRepository}
+          </Button>
+        )}
+      </>
+    ) : (
+      <p class="project-links__pending">
+        <Icon name="external" size={16} />
+        {ui.labels.linksPending}
+      </p>
+    )
+  }
+</div>
+
+<style>
+  .project-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .project-links__pending {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    max-width: 48ch;
+    color: var(--muted);
+    font-size: var(--text-body-sm);
+    line-height: 1.5;
+  }
+
+  .project-links__pending :global(svg) {
+    flex: 0 0 auto;
+    margin-top: 0.2em;
+  }
+</style>

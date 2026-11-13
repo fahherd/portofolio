@@ -1,0 +1,71 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import HomeView from '../../components/pages/HomeView.astro';
+import { getUI } from '../../i18n/ui';
+import { withBase } from '../../utils/url';
+import { site } from '../../data/site';
+
+const locale = 'id' as const;
+const ui = getUI(locale);
+
+const projects = (await getCollection('projects'))
+  .filter((project) => project.data.status === 'verified')
+  .sort((a, b) => a.data.order - b.data.order);
+
+const caseStudies = projects.filter(
+  (project) => project.data.kind === 'case-study',
+);
+const repositories = projects.filter(
+  (project) => project.data.kind === 'repository',
+);
+
+const currentPath = withBase('id/');
+const alternatePath = withBase('en/');
+
+const siteUrl = Astro.site ?? new URL('https://fahherd.github.io');
+
+const jsonLd = [
+  {
+    '@type': 'WebSite',
+    name: ui.meta.siteName,
+    url: new URL(currentPath, siteUrl).href,
+    inLanguage: ['id', 'en'],
+    publisher: {
+      '@type': 'Person',
+      name: site.name,
+    },
+  },
+  {
+    '@type': 'ProfilePage',
+    mainEntity: {
+      '@type': 'Person',
+      name: site.name,
+      jobTitle: site.title,
+      email: `mailto:${site.email}`,
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: 'Bekasi',
+        addressCountry: 'ID',
+      },
+      sameAs: [site.github, site.linkedin],
+    },
+  },
+];
+---
+
+<BaseLayout
+  locale={locale}
+  title={ui.meta.homeTitle}
+  description={ui.meta.homeDescription}
+  currentPath={currentPath}
+  alternatePath={alternatePath}
+  preserveHash
+  jsonLd={jsonLd}
+>
+  <HomeView
+    locale={locale}
+    caseStudies={caseStudies}
+    repositories={repositories}
+  />
+</BaseLayout>

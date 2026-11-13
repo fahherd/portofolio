@@ -1,0 +1,163 @@
+---
+import type { Locale } from '../../i18n/config';
+import { getUI } from '../../i18n/ui';
+import { formatPeriod } from '../../utils/dates';
+import type { ExperienceEntry, OrganizationEntry } from '../../data/cv';
+
+interface Props {
+  locale: Locale;
+  entries: ExperienceEntry[] | OrganizationEntry[];
+  variant?: 'work' | 'organization';
+}
+
+const { locale, entries, variant = 'work' } = Astro.props;
+const ui = getUI(locale);
+---
+
+<ol class:list={['timeline', `timeline--${variant}`]}>
+  {
+    entries.map((entry, index) => (
+      <li class="timeline__row" data-reveal>
+        <div class="timeline__period">
+          <span class="eyebrow timeline__index">
+            {String(index + 1).padStart(2, '0')}
+          </span>
+          <span class="timeline__period-label">
+            {formatPeriod(entry.period, locale, ui.labels.present)}
+          </span>
+        </div>
+
+        <div class="timeline__main">
+          <h3 class="timeline__role serif">{entry.role[locale]}</h3>
+          <p class="timeline__company eyebrow">
+            {'company' in entry ? entry.company : entry.name}
+          </p>
+        </div>
+
+        {'description' in entry && entry.description ? (
+          <p class="timeline__responsibilities">{entry.description[locale]}</p>
+        ) : (
+          <ul class="timeline__responsibilities">
+            {entry.responsibilities[locale].map((item) => (
+              <li>{item}</li>
+            ))}
+          </ul>
+        )}
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .timeline {
+    border-top: 1px solid var(--border);
+  }
+
+  .timeline__row {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 4fr) minmax(0, 4fr);
+    gap: var(--space-6);
+    padding-block: clamp(2rem, 3.5vw, 3rem);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .timeline__period {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .timeline__index {
+    color: var(--accent-text);
+  }
+
+  .timeline__period-label {
+    font-family: var(--font-mono);
+    font-size: var(--text-body-sm);
+    letter-spacing: 0.02em;
+    line-height: 1.5;
+    color: var(--muted);
+    max-width: 16ch;
+  }
+
+  .timeline__main {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .timeline__role {
+    font-size: clamp(1.4rem, 2.2vw, 1.9rem);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    text-wrap: balance;
+  }
+
+  .timeline__company {
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .timeline__responsibilities {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    color: var(--muted);
+    font-size: var(--text-body-sm);
+    line-height: 1.55;
+  }
+
+  p.timeline__responsibilities {
+    display: block;
+  }
+
+  .timeline__responsibilities li {
+    display: flex;
+    gap: var(--space-3);
+  }
+
+  .timeline__responsibilities li::before {
+    content: '—';
+    flex: 0 0 auto;
+    color: var(--muted);
+    opacity: 0.6;
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+  }
+
+  @media (max-width: 1024px) {
+    .timeline__row {
+      grid-template-columns: minmax(0, 2fr) minmax(0, 6fr);
+    }
+
+    .timeline__responsibilities {
+      grid-column: 2;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-2) var(--space-5);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .timeline__row {
+      grid-template-columns: 1fr;
+      gap: var(--space-4);
+    }
+
+    .timeline__period {
+      flex-direction: row;
+      align-items: baseline;
+      gap: var(--space-3);
+    }
+
+    .timeline__period-label {
+      max-width: none;
+    }
+
+    .timeline__responsibilities {
+      grid-column: 1;
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

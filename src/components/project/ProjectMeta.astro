@@ -1,0 +1,102 @@
+---
+import type { Locale } from '../../i18n/config';
+import { getUI } from '../../i18n/ui';
+import { formatPeriod } from '../../utils/dates';
+import type { Period } from '../../data/types';
+
+interface MetaItem {
+  label: string;
+  value: string;
+}
+
+interface Props {
+  locale: Locale;
+  year: number;
+  period?: Period;
+  category?: string;
+  technologies?: string[];
+  roles?: string[];
+  class?: string;
+}
+
+const { locale, year, period, category, technologies, roles, class: className } =
+  Astro.props;
+const ui = getUI(locale);
+
+const categoryLabels: Record<string, string> = {
+  'web-application': ui.categories.webApplication,
+  'backend-development': ui.categories.backendDevelopment,
+  'frontend-development': ui.categories.frontendDevelopment,
+  'personal-project': ui.categories.personalProject,
+  'academic-project': ui.categories.academicProject,
+};
+
+const items: MetaItem[] = [];
+
+if (category) {
+  items.push({
+    label: ui.labels.category,
+    value: categoryLabels[category] ?? category,
+  });
+}
+
+if (period) {
+  items.push({
+    label: ui.labels.period,
+    value: formatPeriod(period, locale, ui.labels.present),
+  });
+} else {
+  items.push({ label: ui.labels.year, value: String(year) });
+}
+
+if (technologies && technologies.length > 0) {
+  items.push({
+    label: ui.labels.technologies,
+    value: technologies.join(' / '),
+  });
+}
+
+if (roles && roles.length > 0) {
+  items.push({ label: ui.labels.roles, value: roles.join(' / ') });
+}
+---
+
+<dl class:list={['meta', className]}>
+  {
+    items.map((item) => (
+      <div class="meta__item">
+        <dt class="eyebrow">{item.label}</dt>
+        <dd>{item.value}</dd>
+      </div>
+    ))
+  }
+</dl>
+
+<style>
+  .meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+    gap: var(--space-5) var(--space-6);
+    width: 100%;
+    padding-block: var(--space-5);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .meta__item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+
+  dt {
+    color: var(--muted);
+    font-size: var(--text-caption);
+  }
+
+  dd {
+    font-size: var(--text-body-sm);
+    line-height: 1.45;
+  }
+</style>

@@ -1,0 +1,23 @@
+{
+  "kind": "repository",
+  "status": "draft",
+  "featured": false,
+  "order": 4,
+  "year": 2026,
+  "technologies": ["Astro"],
+  "links": {
+    "github": "https://github.com/fahherd/portoweb"
+  },
+  "gallery": [],
+  "caseStudyStatus": "pending",
+  "copy": {
+    "id": {
+      "title": "Portoweb",
+      "summary": "Eksperimen portofolio berbasis Astro."
+    },
+    "en": {
+      "title": "Portoweb",
+      "summary": "An Astro-based portfolio experiment."
+    }
+  }
+}

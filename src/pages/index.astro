@@ -1,0 +1,206 @@
+---
+const base = import.meta.env.BASE_URL.endsWith('/')
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+
+const idHref = `${base}id/`;
+const enHref = `${base}en/`;
+---
+
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Fajar Herdiansyah — Full Stack Web Developer</title>
+    <meta
+      name="description"
+      content="Portofolio Fajar Herdiansyah, Full Stack Web Developer. Pilih bahasa untuk melanjutkan. / The portfolio of Fajar Herdiansyah. Choose your language to continue."
+    />
+    <meta name="robots" content="noindex, follow" />
+    <meta name="theme-color" content="#101010" />
+    <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+    <style>
+      :root {
+        color-scheme: dark;
+        --ink: #f3f1ec;
+        --muted: #aaa9a4;
+        --bg: #101010;
+        --accent: #e8ad32;
+        --border: rgba(243, 241, 236, 0.16);
+        --mono: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+        --serif: Georgia, "Times New Roman", serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        height: 100%;
+      }
+
+      body {
+        margin: 0;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        background:
+          radial-gradient(
+            70% 70% at 85% 10%,
+            rgba(232, 173, 50, 0.14),
+            transparent 60%
+          ),
+          var(--bg);
+        color: var(--ink);
+        font-family: "DM Sans", Arial, sans-serif;
+      }
+
+      main {
+        width: min(100%, 760px);
+        display: flex;
+        flex-direction: column;
+        gap: 32px;
+      }
+
+      .mark {
+        font-family: var(--serif);
+        font-size: clamp(3rem, 9vw, 5rem);
+        line-height: 1;
+        letter-spacing: -0.06em;
+      }
+
+      .mark span {
+        color: var(--accent);
+      }
+
+      .eyebrow {
+        margin: 0;
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        letter-spacing: 0.08em;
+        line-height: 1.6;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      h1 {
+        margin: 0;
+        font-family: var(--serif);
+        font-size: clamp(2rem, 5vw, 3.25rem);
+        font-weight: 400;
+        line-height: 1;
+        letter-spacing: -0.035em;
+      }
+
+      .choices {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 8px;
+      }
+
+      a.choice {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        min-height: 64px;
+        padding: 16px 20px;
+        border: 1px solid var(--border);
+        color: var(--ink);
+        font-family: var(--mono);
+        font-size: 0.75rem;
+        letter-spacing: 0.06em;
+        text-decoration: none;
+        text-transform: uppercase;
+        transition:
+          border-color 200ms ease,
+          color 200ms ease;
+      }
+
+      a.choice:hover,
+      a.choice:focus-visible {
+        border-color: var(--accent);
+        color: var(--accent);
+        outline: none;
+      }
+
+      a.choice strong {
+        font-family: var(--serif);
+        font-size: 1.5rem;
+        font-weight: 400;
+        letter-spacing: -0.02em;
+        text-transform: none;
+      }
+
+      .foot {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding-top: 16px;
+        border-top: 1px solid var(--border);
+      }
+
+      @media (max-width: 560px) {
+        .choices {
+          grid-template-columns: 1fr;
+        }
+
+        .foot {
+          flex-direction: column;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        a.choice {
+          transition: none;
+        }
+      }
+    </style>
+    <script is:inline define:vars={{ base }}>
+      (function () {
+        var stored = null;
+        try {
+          stored = window.localStorage.getItem('fh-locale');
+        } catch (error) {
+          stored = null;
+        }
+        var locale = stored === 'en' || stored === 'id' ? stored : 'id';
+        window.location.replace(base + locale + '/' + window.location.hash);
+      })();
+    </script>
+  </head>
+  <body>
+    <main>
+      <div>
+        <p class="eyebrow">Portfolio / 2026</p>
+        <p class="mark">FH<span>.</span></p>
+      </div>
+
+      <div>
+        <h1>Fajar Herdiansyah</h1>
+        <p class="eyebrow" style="margin-top: 12px">
+          Full Stack Web Developer — Bekasi, Indonesia
+        </p>
+      </div>
+
+      <div class="choices">
+        <a class="choice" href={idHref} hreflang="id" lang="id">
+          <span><strong>Bahasa Indonesia</strong></span>
+          <span aria-hidden="true">→</span>
+        </a>
+        <a class="choice" href={enHref} hreflang="en" lang="en">
+          <span><strong>English</strong></span>
+          <span aria-hidden="true">→</span>
+        </a>
+      </div>
+
+      <div class="foot">
+        <p class="eyebrow">fahherd@gmail.com</p>
+        <p class="eyebrow">Github / LinkedIn</p>
+      </div>
+    </main>
+  </body>
+</html>

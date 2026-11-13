@@ -1,0 +1,76 @@
+---
+import type { Locale } from '../../i18n/config';
+import type { CollectionEntry } from 'astro:content';
+import ProjectCard from './ProjectCard.astro';
+
+interface Props {
+  locale: Locale;
+  projects: CollectionEntry<'projects'>[];
+  class?: string;
+}
+
+const { locale, projects, class: className } = Astro.props;
+
+const [featured, ...rest] = projects;
+---
+
+<section class:list={['project-grid', className]}>
+  {
+    featured && (
+      <div class="project-grid__featured">
+        <ProjectCard
+          locale={locale}
+          project={featured}
+          index={String(1).padStart(2, '0')}
+          featured
+        />
+      </div>
+    )
+  }
+
+  {
+    rest.length > 0 && (
+      <div class="project-grid__rest">
+        {rest.map((project, i) => (
+          <ProjectCard
+            locale={locale}
+            project={project}
+            index={String(i + 2).padStart(2, '0')}
+          />
+        ))}
+      </div>
+    )
+  }
+</section>
+
+<style>
+  .project-grid {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(4rem, 8vw, 8rem);
+  }
+
+  .project-grid__featured {
+    width: min(100%, 1040px);
+  }
+
+  .project-grid__rest {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(2.5rem, 5vw, 5rem);
+    padding-top: clamp(2rem, 4vw, 4rem);
+    border-top: 1px solid var(--border);
+  }
+
+  @media (max-width: 1024px) {
+    .project-grid__featured {
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .project-grid__rest {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,134 @@
+---
+import Icon from '../ui/Icon.astro';
+
+interface Props {
+  src: string;
+  alt: string;
+  url: string;
+  index: string;
+  width?: number;
+  height?: number;
+  variant?: 'featured' | 'default';
+  class?: string;
+}
+
+const {
+  src,
+  alt,
+  url,
+  index,
+  width,
+  height,
+  variant = 'default',
+  class: className,
+} = Astro.props;
+
+const host = new URL(url).host.replace(/^www\./, '');
+---
+
+<figure class:list={['preview', `preview--${variant}`, className]}>
+  <div class="preview__chrome" aria-hidden="true">
+    <span class="preview__dots">
+      <span></span>
+      <span></span>
+      <span></span>
+    </span>
+    <span class="preview__url">{host}</span>
+    <span class="preview__index eyebrow">
+      {index}
+      <Icon name="arrow-up-right" size={12} />
+    </span>
+  </div>
+
+  <div class="preview__frame">
+    <img
+      src={src}
+      alt={alt}
+      width={width}
+      height={height}
+      loading="lazy"
+      decoding="async"
+    />
+  </div>
+</figure>
+
+<style>
+  .preview {
+    display: flex;
+    flex-direction: column;
+    padding: clamp(0.5rem, 1.2vw, 0.85rem);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background:
+      radial-gradient(
+        120% 90% at 85% 0%,
+        rgba(232, 173, 50, 0.11) 0%,
+        transparent 55%
+      ),
+      linear-gradient(155deg, #1d1d1c 0%, #121211 55%, #0e0e0d 100%);
+  }
+
+  .preview__chrome {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: 0 0.35rem 0.55rem;
+    color: var(--color-text-muted-light);
+  }
+
+  .preview__dots {
+    display: inline-flex;
+    gap: 4px;
+    flex: 0 0 auto;
+  }
+
+  .preview__dots span {
+    width: 5px;
+    height: 5px;
+    border-radius: var(--radius-full);
+    background: rgba(243, 241, 236, 0.24);
+  }
+
+  .preview__url {
+    min-width: 0;
+    overflow: hidden;
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.06em;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .preview__index {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-left: auto;
+    color: var(--color-accent);
+    font-size: 0.62rem;
+    white-space: nowrap;
+  }
+
+  .preview__frame {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(243, 241, 236, 0.14);
+    background: var(--color-dark-900);
+  }
+
+  .preview__frame img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    object-position: top center;
+    transition: transform var(--duration-slow) var(--ease-cinematic);
+  }
+
+  :global(.project-card:hover) .preview__frame img,
+  :global(.project-card:focus-within) .preview__frame img {
+    transform: scale(1.015);
+  }
+</style>

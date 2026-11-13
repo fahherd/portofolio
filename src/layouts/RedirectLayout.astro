@@ -1,0 +1,67 @@
+---
+import type { Locale } from '../i18n/config';
+import { htmlLang } from '../i18n/config';
+
+interface Props {
+  url: string;
+  title: string;
+  locale: Locale;
+}
+
+const { url, title, locale } = Astro.props;
+const host = new URL(url).host.replace(/^www\./, '');
+const message =
+  locale === 'id'
+    ? `Mengalihkan ke ${host}…`
+    : `Redirecting to ${host}…`;
+---
+
+<!doctype html>
+<html lang={htmlLang[locale]}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="canonical" href={url} />
+    <meta http-equiv="refresh" content={`0; url=${url}`} />
+    <meta name="theme-color" content="#101010" />
+    <script is:inline define:vars={{ url }}>
+      window.location.replace(url);
+    </script>
+    <style is:inline>
+      html {
+        color-scheme: dark;
+        background: #101010;
+      }
+
+      body {
+        min-height: 100svh;
+        margin: 0;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        background: #101010;
+        color: #aaa9a4;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 0.75rem;
+        letter-spacing: 0.08em;
+        line-height: 1.6;
+        text-transform: uppercase;
+      }
+
+      a {
+        color: #e8ad32;
+        text-underline-offset: 3px;
+      }
+
+      a:focus-visible {
+        outline: 2px solid #e8ad32;
+        outline-offset: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <p>{message} <a href={url}>{host}</a></p>
+  </body>
+</html>

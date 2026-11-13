@@ -1,0 +1,34 @@
+---
+import type { Locale } from '../../i18n/config';
+import { getUI } from '../../i18n/ui';
+import { experience } from '../../data/cv';
+import SectionHeading from '../ui/SectionHeading.astro';
+import ExperienceTimeline from './ExperienceTimeline.astro';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const ui = getUI(locale);
+---
+
+<section id="experience" class="section section--light experience">
+  <div class="container">
+    <SectionHeading
+      number="04"
+      label={ui.sections.experience.label}
+      title={ui.sections.experience.title}
+      lede={ui.sections.experience.lede}
+      wide
+    />
+
+    <ExperienceTimeline locale={locale} entries={experience} />
+  </div>
+</section>
+
+<style>
+  .experience :global(.section-heading__lede) {
+    color: var(--muted);
+  }
+</style>

@@ -1,0 +1,96 @@
+{
+  "kind": "case-study",
+  "status": "verified",
+  "featured": true,
+  "order": 1,
+  "year": 2026,
+  "period": {
+    "start": "2026-04",
+    "end": "2026-07"
+  },
+  "category": "web-application",
+  "technologies": ["PHP", "CodeIgniter", "Bootstrap", "MySQL"],
+  "links": {},
+  "externalUrl": "https://www.puskesmassepanjangjaya.com/",
+  "cover": {
+    "src": "/images/projects/puskesmas-sepanjangjaya.webp",
+    "alt": {
+      "id": "Pratinjau beranda website Puskesmas Sepanjangjaya",
+      "en": "Homepage preview of the Puskesmas Sepanjangjaya website"
+    },
+    "width": 1600,
+    "height": 1000
+  },
+  "gallery": [],
+  "caseStudyStatus": "partial",
+  "copy": {
+    "id": {
+      "title": "Sistem Informasi Pelayanan Puskesmas Sepanjangjaya",
+      "summary": "Aplikasi web untuk mendukung alur pelayanan pasien puskesmas, mulai dari pendaftaran, pengelolaan rekam medis, hingga antrean.",
+      "overview": "Sistem Informasi Pelayanan Puskesmas Sepanjangjaya adalah aplikasi web yang mencakup pendaftaran pasien, pengelolaan data pasien, rekam medis, antrean, autentikasi, dan kontrol akses berbasis peran. Aplikasi ini dibangun dengan PHP, CodeIgniter, Bootstrap, dan MySQL.",
+      "context": "Proyek ini berlangsung pada April–Juli 2026. Sistem digunakan untuk mendukung alur pelayanan di puskesmas dengan tiga peran pengguna: Admin, Dokter, dan Petugas Pendaftaran.",
+      "features": [
+        {
+          "title": "Pendaftaran Pasien",
+          "description": "Pencatatan pendaftaran pasien sebagai titik awal alur pelayanan."
+        },
+        {
+          "title": "Pengelolaan Data Pasien",
+          "description": "Pengelolaan informasi pasien yang dibutuhkan selama proses pelayanan."
+        },
+        {
+          "title": "Pengelolaan Rekam Medis",
+          "description": "Pencatatan dan pengelolaan rekam medis pasien."
+        },
+        {
+          "title": "Pengelolaan Antrean",
+          "description": "Pengaturan antrean pelayanan pasien."
+        },
+        {
+          "title": "Autentikasi",
+          "description": "Mekanisme masuk untuk membatasi akses ke sistem."
+        },
+        {
+          "title": "Kontrol Akses Berbasis Peran",
+          "description": "Hak akses yang berbeda untuk Admin, Dokter, dan Petugas Pendaftaran."
+        }
+      ],
+      "roles": ["Admin", "Dokter", "Petugas Pendaftaran"],
+      "galleryNote": "Tangkapan layar proyek akan ditambahkan setelah dokumentasi tersedia."
+    },
+    "en": {
+      "title": "Puskesmas Sepanjangjaya Service Information System",
+      "summary": "A web application supporting a community health center's patient service flow, from registration and medical records to queue management.",
+      "overview": "Puskesmas Sepanjangjaya Service Information System is a web application covering patient registration, patient data management, medical records, queues, authentication, and role-based access control. It is built with PHP, CodeIgniter, Bootstrap, and MySQL.",
+      "context": "The project ran from April to July 2026. The system supports the health center's service flow with three user roles: Admin, Doctor, and Registration Staff.",
+      "features": [
+        {
+          "title": "Patient Registration",
+          "description": "Recording patient registration as the starting point of the service flow."
+        },
+        {
+          "title": "Patient Management",
+          "description": "Managing patient information required throughout the service process."
+        },
+        {
+          "title": "Medical Records Management",
+          "description": "Recording and managing patient medical records."
+        },
+        {
+          "title": "Queue Management",
+          "description": "Organizing the patient service queue."
+        },
+        {
+          "title": "Authentication",
+          "description": "A sign-in mechanism that restricts access to the system."
+        },
+        {
+          "title": "Role-Based Access Control",
+          "description": "Different access levels for Admin, Doctor, and Registration Staff."
+        }
+      ],
+      "roles": ["Admin", "Doctor", "Registration Staff"],
+      "galleryNote": "Project screenshots will be added once documentation is available."
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "kind": "repository",
+  "status": "draft",
+  "featured": false,
+  "order": 3,
+  "year": 2025,
+  "technologies": ["HTML", "CSS"],
+  "links": {
+    "live": "https://fahherd.github.io/my-portofolio/",
+    "github": "https://github.com/fahherd/my-portofolio"
+  },
+  "gallery": [],
+  "caseStudyStatus": "pending",
+  "copy": {
+    "id": {
+      "title": "My Portfolio",
+      "summary": "Portofolio pribadi versi awal yang dibangun dengan HTML dan CSS."
+    },
+    "en": {
+      "title": "My Portfolio",
+      "summary": "An earlier personal portfolio built with HTML and CSS."
+    }
+  }
+}

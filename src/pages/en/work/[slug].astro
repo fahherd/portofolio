@@ -1,0 +1,91 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import RedirectLayout from '../../../layouts/RedirectLayout.astro';
+import CaseStudy from '../../../components/project/CaseStudy.astro';
+import { site } from '../../../data/site';
+import { projectPath, alternateProjectPath } from '../../../utils/url';
+
+export async function getStaticPaths() {
+  const projects = await getCollection(
+    'projects',
+    ({ data }) => data.kind === 'case-study' && data.status === 'verified',
+  );
+
+  return projects.map((project) => ({
+    params: { slug: project.id },
+    props: { project },
+  }));
+}
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+}
+
+const { project } = Astro.props;
+const locale = 'en' as const;
+const alternateLocale = 'id' as const;
+const copy = project.data.copy[locale];
+
+const caseStudies = (await getCollection(
+  'projects',
+  ({ data }) => data.kind === 'case-study' && data.status === 'verified',
+)).sort((a, b) => a.data.order - b.data.order);
+
+const index = String(
+  caseStudies.findIndex((item) => item.id === project.id) + 1,
+).padStart(2, '0');
+
+const related = caseStudies.filter((item) => item.id !== project.id);
+
+const currentPath = projectPath(locale, project.id);
+const alternatePath = alternateProjectPath(alternateLocale, project.id);
+
+const title = `${copy.title} — ${site.name}`;
+
+const jsonLd = [
+  {
+    '@type': 'CreativeWork',
+    name: copy.title,
+    description: copy.summary,
+    dateCreated: project.data.period?.start,
+    dateModified: project.data.period?.end ?? undefined,
+    keywords: project.data.technologies.join(', '),
+    author: {
+      '@type': 'Person',
+      name: site.name,
+    },
+    creator: {
+      '@type': 'Person',
+      name: site.name,
+    },
+  },
+];
+---
+
+{
+  project.data.externalUrl ? (
+    <RedirectLayout
+      url={project.data.externalUrl}
+      title={copy.title}
+      locale={locale}
+    />
+  ) : (
+    <BaseLayout
+      locale={locale}
+      title={title}
+      description={copy.summary}
+      currentPath={currentPath}
+      alternatePath={alternatePath}
+      ogType="article"
+      jsonLd={jsonLd}
+    >
+      <CaseStudy
+        locale={locale}
+        project={project}
+        index={index}
+        related={related}
+      />
+    </BaseLayout>
+  )
+}

@@ -1,0 +1,187 @@
+---
+import type { Locale } from '../../i18n/config';
+import { getUI } from '../../i18n/ui';
+import { withBase } from '../../utils/url';
+import Icon from '../ui/Icon.astro';
+
+interface GalleryItem {
+  src: string;
+  alt: Record<Locale, string>;
+  caption?: Record<Locale, string>;
+  fit?: 'cover' | 'contain';
+  width?: number;
+  height?: number;
+}
+
+interface Props {
+  locale: Locale;
+  items: GalleryItem[];
+  note?: string;
+  class?: string;
+}
+
+const { locale, items, note, class: className } = Astro.props;
+const ui = getUI(locale);
+---
+
+<div class:list={['gallery', className]}>
+  {
+    items.length > 0 ? (
+      <div class="gallery__grid">
+        {items.map((item, index) => (
+          <figure
+            class:list={['gallery__figure', { 'gallery__figure--wide': index === 0 }]}
+          >
+            <div class="gallery__frame">
+              <img
+                src={withBase(item.src)}
+                alt={item.alt[locale]}
+                loading="lazy"
+                decoding="async"
+                width={item.width}
+                height={item.height}
+                style={`object-fit:${item.fit ?? 'cover'}`}
+              />
+            </div>
+            {item.caption && (
+              <figcaption class="eyebrow">{item.caption[locale]}</figcaption>
+            )}
+          </figure>
+        ))}
+      </div>
+    ) : (
+      <div class="gallery__pending" data-reveal-media>
+        <div class="gallery__pending-inner">
+          <span class="gallery__pending-mark serif" aria-hidden="true">
+            FH<span>.</span>
+          </span>
+          <p class="eyebrow gallery__pending-label">
+            <Icon name="external" size={14} />
+            {ui.labels.showcase}
+          </p>
+          <p class="gallery__pending-note">{note ?? ui.labels.galleryPending}</p>
+        </div>
+      </div>
+    )
+  }
+</div>
+
+<style>
+  .gallery__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-5);
+  }
+
+  .gallery__figure {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .gallery__figure--wide {
+    grid-column: 1 / -1;
+  }
+
+  .gallery__frame {
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--color-dark-900);
+  }
+
+  .gallery__frame img {
+    width: 100%;
+    height: auto;
+    transition: transform var(--duration-slow) var(--ease-out);
+  }
+
+  .gallery__figure:hover .gallery__frame img {
+    transform: scale(1.02);
+  }
+
+  figcaption {
+    color: var(--muted);
+    font-size: var(--text-caption);
+  }
+
+  .gallery__pending {
+    --text: var(--color-text-light);
+    --muted: var(--color-text-muted-light);
+    --accent-text: var(--color-accent);
+    --border: rgba(243, 241, 236, 0.14);
+
+    position: relative;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 16 / 8;
+    padding: var(--space-8);
+    overflow: hidden;
+    border: 1px solid var(--border-light);
+    background:
+      linear-gradient(
+        to right,
+        transparent calc(25% - 1px),
+        var(--border) 25%,
+        transparent calc(25% + 1px)
+      ),
+      linear-gradient(
+        to right,
+        transparent calc(75% - 1px),
+        var(--border) 75%,
+        transparent calc(75% + 1px)
+      ),
+      linear-gradient(
+        to bottom,
+        transparent calc(50% - 1px),
+        var(--border) 50%,
+        transparent calc(50% + 1px)
+      ),
+      var(--color-dark-900);
+  }
+
+  .gallery__pending-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+    max-width: 42ch;
+    text-align: center;
+  }
+
+  .gallery__pending-mark {
+    font-size: clamp(3rem, 7vw, 5rem);
+    line-height: 1;
+    letter-spacing: -0.06em;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(243, 241, 236, 0.32);
+  }
+
+  .gallery__pending-mark span {
+    -webkit-text-stroke: 0;
+    color: var(--color-accent);
+  }
+
+  .gallery__pending-label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--accent-text);
+  }
+
+  .gallery__pending-note {
+    color: var(--muted);
+    font-size: var(--text-body-sm);
+    line-height: 1.55;
+  }
+
+  @media (max-width: 640px) {
+    .gallery__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .gallery__pending {
+      aspect-ratio: 4 / 3;
+      padding: var(--space-5);
+    }
+  }
+</style>

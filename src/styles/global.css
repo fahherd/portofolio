@@ -1,0 +1,193 @@
+html {
+  scroll-behavior: smooth;
+  background: var(--color-dark-950);
+}
+
+body {
+  background: var(--color-dark-950);
+  color: var(--color-text-light);
+  font-family: var(--font-body);
+  font-size: var(--text-body-md);
+  line-height: var(--leading-body);
+  overflow-x: clip;
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-accent-contrast, var(--color-dark-900));
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus-ring, var(--color-accent));
+  outline-offset: 4px;
+}
+
+html.menu-open,
+html.menu-open body {
+  overflow: hidden;
+}
+
+/* =========================
+   SECTION THEMES
+========================= */
+
+.section {
+  position: relative;
+  padding-block: var(--section-padding);
+  overflow: clip;
+}
+
+.section--dark {
+  --surface: var(--color-dark-950);
+  --text: var(--color-text-light);
+  --muted: var(--color-text-muted-light);
+  --border: var(--border-dark);
+  --accent-text: var(--color-accent);
+  --focus-ring: var(--color-accent);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.section--dark-elevated {
+  --surface: var(--color-dark-900);
+  --text: var(--color-text-light);
+  --muted: var(--color-text-muted-light);
+  --border: var(--border-dark);
+  --accent-text: var(--color-accent);
+  --focus-ring: var(--color-accent);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.section--light {
+  --surface: var(--color-light-50);
+  --text: var(--color-text-dark);
+  --muted: var(--color-text-muted-dark);
+  --border: var(--border-light);
+  --accent-text: var(--color-accent-dark);
+  --focus-ring: var(--color-text-dark);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.section--light-warm {
+  --surface: var(--color-light-100);
+  --text: var(--color-text-dark);
+  --muted: var(--color-text-muted-dark);
+  --border: var(--border-light);
+  --accent-text: var(--color-accent-dark);
+  --focus-ring: var(--color-text-dark);
+  background: var(--surface);
+  color: var(--text);
+}
+
+/* =========================
+   TEXTURE
+========================= */
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-noise);
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: var(--noise-image);
+  background-repeat: repeat;
+  mix-blend-mode: soft-light;
+}
+
+/* =========================
+   LINKS & BUTTONS
+========================= */
+
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text);
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+.text-link:hover {
+  color: var(--accent-text);
+}
+
+.text-link svg {
+  flex: 0 0 auto;
+  transition: transform var(--duration-normal) var(--ease-out);
+}
+
+.text-link:hover svg {
+  transform: translateX(5px);
+}
+
+/* =========================
+   UTILITIES
+========================= */
+
+.u-visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.u-mono {
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+.u-muted {
+  color: var(--muted);
+}
+
+.u-accent {
+  color: var(--accent-text);
+}
+
+.u-rule {
+  border-top: 1px solid var(--border);
+}
+
+.u-full-bleed {
+  width: 100%;
+}
+
+.skip-link {
+  position: fixed;
+  top: var(--space-4);
+  left: var(--space-4);
+  z-index: var(--z-skip);
+  padding: var(--space-3) var(--space-5);
+  background: var(--color-accent);
+  color: var(--color-dark-950);
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  transform: translateY(-200%);
+  transition: transform var(--duration-normal) var(--ease-out);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}

@@ -1,0 +1,942 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import type { Locale } from '../../i18n/config';
+import { getUI } from '../../i18n/ui';
+import { homePath } from '../../utils/url';
+import { formatPeriod } from '../../utils/dates';
+import ProjectMeta from './ProjectMeta.astro';
+import ProjectLinks from './ProjectLinks.astro';
+import ProjectGallery from './ProjectGallery.astro';
+import CaseStudyBlock from './CaseStudyBlock.astro';
+import Tag from '../ui/Tag.astro';
+import Icon from '../ui/Icon.astro';
+
+interface Props {
+  locale: Locale;
+  project: CollectionEntry<'projects'>;
+  index?: string;
+  related?: CollectionEntry<'projects'>[];
+}
+
+const { locale, project, index = '01', related = [] } = Astro.props;
+const ui = getUI(locale);
+const copy = project.data.copy[locale];
+
+const categoryLabels: Record<string, string> = {
+  'web-application': ui.categories.webApplication,
+  'backend-development': ui.categories.backendDevelopment,
+  'frontend-development': ui.categories.frontendDevelopment,
+  'personal-project': ui.categories.personalProject,
+  'academic-project': ui.categories.academicProject,
+};
+
+const category = project.data.category
+  ? categoryLabels[project.data.category]
+  : ui.labels.project;
+
+const toc: Array<{ id: string; label: string; number: string }> = [];
+let cursor = 0;
+function addSection(id: string, label: string) {
+  cursor += 1;
+  toc.push({ id, label, number: String(cursor).padStart(2, '0') });
+}
+
+if (copy.overview) addSection('overview', ui.labels.overview);
+if (copy.context) addSection('context', ui.labels.context);
+if (copy.problem) addSection('problem', ui.labels.problem);
+if (copy.objectives?.length) addSection('objectives', ui.labels.objectives);
+if (copy.role || copy.responsibilities?.length) {
+  addSection('responsibilities', ui.labels.responsibilities);
+}
+addSection('stack', ui.labels.stack);
+if (copy.architecture?.length) addSection('architecture', ui.labels.architecture);
+if (copy.features?.length) addSection('features', ui.labels.features);
+addSection('showcase', ui.labels.showcase);
+if (copy.challenges?.length) addSection('challenges', ui.labels.challenges);
+if (copy.outcome?.length) addSection('outcome', ui.labels.outcome);
+if (project.data.links.live || project.data.links.github) {
+  addSection('links', ui.labels.links);
+}
+
+const number = (id: string) =>
+  toc.find((section) => section.id === id)?.number ?? '00';
+
+const statusLabel =
+  project.data.caseStudyStatus === 'complete'
+    ? ui.labels.complete
+    : project.data.caseStudyStatus === 'partial'
+      ? ui.labels.partial
+      : ui.labels.pending;
+
+const periodLabel = project.data.period
+  ? formatPeriod(project.data.period, locale, ui.labels.present)
+  : String(project.data.year);
+---
+
+<article class="case-study">
+  <header class="case-hero section--dark">
+    <div class="container case-hero__inner">
+      <a class="case-hero__back" href={`${homePath(locale)}#work`}>
+        <Icon name="arrow-right" size={15} />
+        {ui.actions.viewAllWork}
+      </a>
+
+      <div class="case-hero__top">
+        <div class="case-hero__status">
+          <span class="eyebrow">
+            {ui.labels.caseStudy} / {index}
+          </span>
+          <span
+            class:list={[
+              'case-status',
+              `case-status--${project.data.caseStudyStatus}`,
+            ]}
+          >
+            <span class="case-status__dot" aria-hidden="true"></span>
+            {ui.labels.documentationStatus}: {statusLabel}
+          </span>
+        </div>
+
+        <h1 class="display case-hero__title">{copy.title}</h1>
+
+        <p class="case-hero__summary body-lg">{copy.summary}</p>
+      </div>
+
+      <ProjectMeta
+        locale={locale}
+        year={project.data.year}
+        period={project.data.period}
+        category={project.data.category}
+        technologies={project.data.technologies}
+        roles={copy.roles}
+        class="case-hero__meta"
+      />
+
+      <div class="case-plate" aria-hidden="true">
+        <div class="case-plate__row">
+          <span class="eyebrow">{category}</span>
+          <span class="eyebrow">{periodLabel}</span>
+        </div>
+
+        <div class="case-plate__stack serif">
+          {
+            project.data.technologies.map((tech, i) => (
+              <>
+                {i > 0 && <span class="case-plate__separator">/</span>}
+                <span>{tech}</span>
+              </>
+            ))
+          }
+        </div>
+
+        <span class="case-plate__index serif">{index}</span>
+        <span class="case-plate__dot"></span>
+      </div>
+    </div>
+  </header>
+
+  <div class="section--light case-body">
+    <div class="container case-layout">
+      <aside class="case-toc" data-toc>
+        <p class="eyebrow case-toc__label">{ui.labels.tableOfContents}</p>
+        <ol class="case-toc__list">
+          {
+            toc.map((section) => (
+              <li>
+                <a
+                  href={`#${section.id}`}
+                  data-toc-link={`#${section.id}`}
+                  class="case-toc__link"
+                >
+                  <span class="case-toc__number">{section.number}</span>
+                  <span>{section.label}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ol>
+      </aside>
+
+      <div class="case-content">
+        {
+          project.data.caseStudyStatus !== 'complete' && (
+            <div class="case-notice">
+              <span class="case-notice__mark" aria-hidden="true">
+                <Icon name="external" size={16} />
+              </span>
+              <div>
+                <p class="eyebrow case-notice__title">
+                  {ui.labels.documentationInProgress}
+                </p>
+                <p class="case-notice__body">
+                  {ui.labels.caseStudyProgress}
+                </p>
+              </div>
+            </div>
+          )
+        }
+
+        {
+          copy.overview && (
+            <CaseStudyBlock
+              id="overview"
+              number={number('overview')}
+              label={ui.labels.overview}
+            >
+              <p class="case-copy">{copy.overview}</p>
+            </CaseStudyBlock>
+          )
+        }
+
+        {
+          copy.context && (
+            <CaseStudyBlock
+              id="context"
+              number={number('context')}
+              label={ui.labels.context}
+            >
+              <p class="case-copy">{copy.context}</p>
+            </CaseStudyBlock>
+          )
+        }
+
+        {
+          copy.problem && (
+            <CaseStudyBlock
+              id="problem"
+              number={number('problem')}
+              label={ui.labels.problem}
+            >
+              <p class="case-copy">{copy.problem}</p>
+            </CaseStudyBlock>
+          )
+        }
+
+        {
+          copy.objectives && copy.objectives.length > 0 && (
+            <CaseStudyBlock
+              id="objectives"
+              number={number('objectives')}
+              label={ui.labels.objectives}
+            >
+              <ul class="case-list">
+                {copy.objectives.map((item) => (
+                  <li>
+                    <span class="case-list__mark" aria-hidden="true">
+                      <Icon name="check" size={14} />
+                    </span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </CaseStudyBlock>
+          )
+        }
+
+        {
+          (copy.role || (copy.responsibilities && copy.responsibilities.length > 0)) && (
+            <CaseStudyBlock
+              id="responsibilities"
+              number={number('responsibilities')}
+              label={ui.labels.responsibilities}
+            >
+              {copy.role && <p class="case-copy">{copy.role}</p>}
+              {copy.responsibilities && copy.responsibilities.length > 0 && (
+                <ul class="case-list">
+                  {copy.responsibilities.map((item) => (
+                    <li>
+                      <span class="case-list__mark" aria-hidden="true">
+                        <Icon name="check" size={14} />
+                      </span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </CaseStudyBlock>
+          )
+        }
+
+        <CaseStudyBlock
+          id="stack"
+          number={number('stack')}
+          label={ui.labels.stack}
+        >
+          <ul class="case-stack">
+            {
+              project.data.technologies.map((tech) => (
+                <li>
+                  <Tag>{tech}</Tag>
+                </li>
+              ))
+            }
+          </ul>
+        </CaseStudyBlock>
+
+        {
+          copy.architecture && copy.architecture.length > 0 && (
+            <CaseStudyBlock
+              id="architecture"
+              number={number('architecture')}
+              label={ui.labels.architecture}
+            >
+              <dl class="case-architecture">
+                {copy.architecture.map((item) => (
+                  <div>
+                    <dt class="eyebrow">{item.label}</dt>
+                    <dd>{item.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </CaseStudyBlock>
+          )
+        }
+
+        {
+          copy.features && copy.features.length > 0 && (
+            <CaseStudyBlock
+              id="features"
+              number={number('features')}
+              label={ui.labels.features}
+            >
+              <ol class="case-features">
+                {copy.features.map((feature, i) => (
+                  <li>
+                    <span class="eyebrow case-features__number">
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    <div>
+                      <h3 class="case-features__title">{feature.title}</h3>
+                      {feature.description && (
+                        <p class="case-features__description">
+                          {feature.description}
+                        </p>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </CaseStudyBlock>
+          )
+        }
+
+        <CaseStudyBlock
+          id="showcase"
+          number={number('showcase')}
+          label={ui.labels.showcase}
+        >
+          <ProjectGallery
+            locale={locale}
+            items={project.data.gallery}
+            note={copy.galleryNote}
+          />
+        </CaseStudyBlock>
+
+        {
+          copy.challenges && copy.challenges.length > 0 && (
+            <CaseStudyBlock
+              id="challenges"
+              number={number('challenges')}
+              label={ui.labels.challenges}
+            >
+              <ul class="case-challenges">
+                {copy.challenges.map((item) => (
+                  <li>
+                    <div class="case-challenges__item">
+                      <p class="eyebrow">Challenge</p>
+                      <p class="case-copy">{item.challenge}</p>
+                    </div>
+                    <div class="case-challenges__item">
+                      <p class="eyebrow">Solution</p>
+                      <p class="case-copy">{item.solution}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </CaseStudyBlock>
+          )
+        }
+
+        {
+          copy.outcome && copy.outcome.length > 0 && (
+            <CaseStudyBlock
+              id="outcome"
+              number={number('outcome')}
+              label={ui.labels.outcome}
+            >
+              <ul class="case-list">
+                {copy.outcome.map((item) => (
+                  <li>
+                    <span class="case-list__mark" aria-hidden="true">
+                      <Icon name="check" size={14} />
+                    </span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </CaseStudyBlock>
+          )
+        }
+
+        {
+          (project.data.links.live || project.data.links.github) && (
+            <CaseStudyBlock
+              id="links"
+              number={number('links')}
+              label={ui.labels.links}
+            >
+              <ProjectLinks
+                locale={locale}
+                live={project.data.links.live}
+                github={project.data.links.github}
+              />
+            </CaseStudyBlock>
+          )
+        }
+      </div>
+    </div>
+  </div>
+
+  <section class="section--dark case-next">
+    <div class="container case-next__inner">
+      <p class="eyebrow text-muted">{ui.labels.selectedWorks}</p>
+      <a class="case-next__link display display--md" href={`${homePath(locale)}#work`}>
+        {ui.actions.viewAllWork}
+        <Icon name="arrow-right" size={34} />
+      </a>
+
+      {
+        related.length > 0 && (
+          <ul class="case-next__related">
+            {related.map((item) => (
+              <li>
+                <a href={homePath(locale) + '#work'}>
+                  {item.data.copy[locale].title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </div>
+  </section>
+</article>
+
+<style>
+  .case-hero {
+    padding-top: calc(var(--header-height) + clamp(3rem, 7vw, 7rem));
+    padding-bottom: clamp(3rem, 6vw, 6rem);
+    border-bottom: 1px solid var(--border-dark);
+    background:
+      radial-gradient(
+        90% 70% at 100% 0%,
+        rgba(232, 173, 50, 0.1) 0%,
+        transparent 55%
+      ),
+      var(--color-dark-950);
+  }
+
+  .case-hero__inner {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2rem, 4vw, 3.5rem);
+  }
+
+  .case-hero__back {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    align-self: flex-start;
+    min-height: 44px;
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    transition: color var(--duration-fast) var(--ease-standard);
+  }
+
+  .case-hero__back :global(svg) {
+    transform: rotate(180deg);
+    transition: transform var(--duration-normal) var(--ease-out);
+  }
+
+  .case-hero__back:hover {
+    color: var(--text);
+  }
+
+  .case-hero__back:hover :global(svg) {
+    transform: rotate(180deg) translateX(4px);
+  }
+
+  .case-hero__top {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+    max-width: 62rem;
+  }
+
+  .case-hero__status {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3) var(--space-6);
+    color: var(--muted);
+  }
+
+  .case-status {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 0.35rem 0.6rem;
+    border: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: var(--text-caption);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+  }
+
+  .case-status__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    background: var(--color-success);
+  }
+
+  .case-status--partial .case-status__dot {
+    background: var(--color-accent);
+  }
+
+  .case-status--pending .case-status__dot {
+    background: var(--color-text-muted-light);
+  }
+
+  .case-hero__title {
+    font-size: clamp(2.75rem, 6vw, 5.5rem);
+    max-width: 22ch;
+  }
+
+  .case-hero__summary {
+    max-width: 58ch;
+    color: var(--muted);
+  }
+
+  .case-hero__meta {
+    --border: var(--border-dark);
+  }
+
+  .case-plate {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: clamp(2rem, 5vw, 4rem);
+    min-height: clamp(12rem, 24vw, 18rem);
+    padding: clamp(1.25rem, 2.4vw, 2rem);
+    overflow: hidden;
+    border: 1px solid var(--border-dark);
+    background:
+      linear-gradient(
+        to right,
+        transparent calc(25% - 1px),
+        rgba(243, 241, 236, 0.06) 25%,
+        transparent calc(25% + 1px)
+      ),
+      linear-gradient(
+        to right,
+        transparent calc(75% - 1px),
+        rgba(243, 241, 236, 0.06) 75%,
+        transparent calc(75% + 1px)
+      ),
+      linear-gradient(160deg, #1a1a19 0%, #0e0e0d 100%);
+  }
+
+  .case-plate__row {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-5);
+    color: var(--muted);
+  }
+
+  .case-plate__stack {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25em 0.45em;
+    max-width: 80%;
+    font-size: clamp(1.5rem, 3.2vw, 2.75rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  .case-plate__separator {
+    color: var(--color-accent);
+  }
+
+  .case-plate__index {
+    position: absolute;
+    right: clamp(0.5rem, 2vw, 1.5rem);
+    bottom: -0.24em;
+    font-size: clamp(9rem, 22vw, 18rem);
+    line-height: 0.72;
+    letter-spacing: -0.06em;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(243, 241, 236, 0.16);
+  }
+
+  .case-plate__dot {
+    position: absolute;
+    top: clamp(1.25rem, 2.4vw, 2rem);
+    left: 50%;
+    width: 6px;
+    height: 6px;
+    margin-left: -3px;
+    border-radius: var(--radius-full);
+    background: var(--color-accent);
+  }
+
+  .case-body {
+    padding-block: clamp(3rem, 7vw, 7rem);
+  }
+
+  .case-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 8fr);
+    gap: clamp(2.5rem, 6vw, 6rem);
+    align-items: start;
+  }
+
+  .case-toc {
+    position: sticky;
+    top: calc(var(--header-height) + var(--space-6));
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding-right: var(--space-4);
+  }
+
+  .case-toc__label {
+    color: var(--muted);
+  }
+
+  .case-toc__list {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    border-left: 1px solid var(--border);
+  }
+
+  .case-toc__link {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    padding: 0.3rem 0 0.3rem var(--space-4);
+    color: var(--muted);
+    font-size: var(--text-body-sm);
+    line-height: 1.4;
+    transition:
+      color var(--duration-fast) var(--ease-standard),
+      border-color var(--duration-fast) var(--ease-standard);
+  }
+
+  .case-toc__link:hover,
+  .case-toc__link.is-active {
+    color: var(--text);
+  }
+
+  .case-toc__link.is-active {
+    box-shadow: inset 2px 0 0 var(--accent-text);
+  }
+
+  .case-toc__number {
+    font-family: var(--font-mono);
+    font-size: var(--text-caption);
+    color: var(--muted);
+  }
+
+  .case-content {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2.5rem, 5vw, 4rem);
+    min-width: 0;
+  }
+
+  .case-notice {
+    display: flex;
+    gap: var(--space-4);
+    padding: var(--space-5);
+    border: 1px solid var(--border);
+    border-left: 2px solid var(--accent-text);
+    background: rgba(232, 173, 50, 0.06);
+  }
+
+  .case-notice__mark {
+    flex: 0 0 auto;
+    color: var(--accent-text);
+    padding-top: 0.1rem;
+  }
+
+  .case-notice__title {
+    color: var(--text);
+    margin-bottom: var(--space-2);
+  }
+
+  .case-notice__body {
+    color: var(--muted);
+    font-size: var(--text-body-sm);
+    line-height: 1.55;
+    max-width: 60ch;
+  }
+
+  .case-copy {
+    color: var(--muted);
+    line-height: 1.7;
+    max-width: 68ch;
+  }
+
+  .case-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .case-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    color: var(--muted);
+    line-height: 1.55;
+  }
+
+  .case-list__mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 22px;
+    height: 22px;
+    margin-top: 0.15rem;
+    border: 1px solid var(--border);
+    color: var(--accent-text);
+  }
+
+  .case-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .case-architecture {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .case-architecture > div {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    gap: var(--space-4);
+    padding-block: var(--space-4);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .case-architecture dt {
+    color: var(--muted);
+  }
+
+  .case-features {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .case-features li {
+    display: flex;
+    gap: var(--space-3);
+    padding: var(--space-5) var(--space-4) var(--space-5) 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .case-features li:nth-child(odd) {
+    border-right: 1px solid var(--border);
+  }
+
+  .case-features li:nth-child(even) {
+    padding-left: var(--space-5);
+  }
+
+  .case-features__number {
+    color: var(--accent-text);
+    padding-top: 0.2em;
+  }
+
+  .case-features__title {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 400;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: var(--space-2);
+  }
+
+  .case-features__description {
+    color: var(--muted);
+    font-size: var(--text-body-sm);
+    line-height: 1.55;
+  }
+
+  .case-challenges {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .case-challenges > li {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-6);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--border);
+  }
+
+  .case-challenges__item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .case-challenges__item .eyebrow {
+    color: var(--muted);
+  }
+
+  .case-next {
+    padding-block: clamp(4rem, 8vw, 8rem);
+    border-top: 1px solid var(--border-dark);
+  }
+
+  .case-next__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  .case-next__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-5);
+    align-self: flex-start;
+    color: var(--text);
+    transition: color var(--duration-normal) var(--ease-standard);
+  }
+
+  .case-next__link :global(svg) {
+    color: var(--accent-text);
+    transition: transform var(--duration-normal) var(--ease-out);
+  }
+
+  .case-next__link:hover {
+    color: var(--accent-text);
+  }
+
+  .case-next__link:hover :global(svg) {
+    transform: translateX(8px);
+  }
+
+  .case-next__related {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4) var(--space-8);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--border);
+  }
+
+  .case-next__related a {
+    color: var(--muted);
+    transition: color var(--duration-fast) var(--ease-standard);
+  }
+
+  .case-next__related a:hover {
+    color: var(--accent-text);
+  }
+
+  @media (max-width: 1024px) {
+    .case-layout {
+      grid-template-columns: 1fr;
+      gap: var(--space-8);
+    }
+
+    .case-toc {
+      position: static;
+      padding: var(--space-5);
+      border: 1px solid var(--border);
+      background: rgba(23, 23, 23, 0.02);
+    }
+
+    .case-toc__list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      border-left: 0;
+      gap: 2px var(--space-5);
+    }
+
+    .case-toc__link {
+      padding-left: 0;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .case-hero__title {
+      font-size: clamp(2.4rem, 10.5vw, 3.4rem);
+    }
+
+    .case-hero__status {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .case-plate__stack {
+      max-width: 100%;
+      font-size: clamp(1.25rem, 6.5vw, 1.75rem);
+    }
+
+    .case-plate__index {
+      font-size: 9rem;
+    }
+
+    .case-toc__list {
+      grid-template-columns: 1fr;
+    }
+
+    .case-features {
+      grid-template-columns: 1fr;
+    }
+
+    .case-features li:nth-child(odd) {
+      border-right: 0;
+    }
+
+    .case-features li:nth-child(even) {
+      padding-left: 0;
+    }
+
+    .case-challenges > li {
+      grid-template-columns: 1fr;
+      gap: var(--space-4);
+    }
+
+    .case-architecture > div {
+      grid-template-columns: 1fr;
+      gap: var(--space-2);
+    }
+
+    .case-next__link {
+      font-size: clamp(2rem, 8vw, 2.75rem);
+    }
+  }
+</style>

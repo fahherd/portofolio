@@ -1,0 +1,23 @@
+{
+  "kind": "repository",
+  "status": "verified",
+  "featured": false,
+  "order": 4,
+  "year": 2026,
+  "technologies": [],
+  "links": {
+    "live": "https://promo-mitsubishibekasi.com/"
+  },
+  "gallery": [],
+  "caseStudyStatus": "pending",
+  "copy": {
+    "id": {
+      "title": "Promo Mitsubishi Bekasi",
+      "summary": "Website dealer resmi Mitsubishi Bekasi: informasi promo, harga, dan kredit mobil Mitsubishi."
+    },
+    "en": {
+      "title": "Mitsubishi Bekasi Promo",
+      "summary": "Official Mitsubishi Bekasi dealership website: promos, pricing, and financing."
+    }
+  }
+}

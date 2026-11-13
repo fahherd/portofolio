@@ -1,0 +1,23 @@
+{
+  "kind": "repository",
+  "status": "verified",
+  "featured": false,
+  "order": 3,
+  "year": 2026,
+  "technologies": [],
+  "links": {
+    "live": "https://dealerbydcibubur.com/"
+  },
+  "gallery": [],
+  "caseStudyStatus": "pending",
+  "copy": {
+    "id": {
+      "title": "Dealer BYD Cibubur",
+      "summary": "Website dealer resmi BYD Cibubur: informasi promo, harga, dan kredit mobil listrik BYD."
+    },
+    "en": {
+      "title": "BYD Cibubur Dealer",
+      "summary": "Official BYD Cibubur dealership website: promos, pricing, and financing for BYD electric cars."
+    }
+  }
+}

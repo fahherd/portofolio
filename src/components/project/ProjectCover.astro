@@ -1,0 +1,244 @@
+---
+import ProjectPreview from './ProjectPreview.astro';
+
+interface Props {
+  title: string;
+  index: string;
+  year: number;
+  label?: string;
+  category?: string;
+  technologies?: string[];
+  variant?: 'featured' | 'default';
+  cover?: {
+    src: string;
+    alt: string;
+    width?: number;
+    height?: number;
+  };
+  previewUrl?: string;
+  class?: string;
+}
+
+const {
+  title,
+  index,
+  year,
+  label,
+  category,
+  technologies = [],
+  variant = 'default',
+  cover,
+  previewUrl,
+  class: className,
+} = Astro.props;
+
+const topLabel = label ?? category;
+---
+
+{
+  cover && previewUrl ? (
+    <ProjectPreview
+      src={cover.src}
+      alt={cover.alt}
+      url={previewUrl}
+      index={index}
+      width={cover.width}
+      height={cover.height}
+      variant={variant}
+      class={className}
+    />
+  ) : (
+    <div
+      class:list={['cover', `cover--${variant}`, className]}
+      aria-hidden="true"
+    >
+      <span class="cover__rule cover__rule--v1"></span>
+      <span class="cover__rule cover__rule--v2"></span>
+      <span class="cover__rule cover__rule--h"></span>
+
+      <div class="cover__top">
+        <span class="cover__label eyebrow">
+          {topLabel
+            ? `${label ?? ''}${label && category ? ' — ' : ''}${category ?? ''}`
+            : 'PROJECT'}
+        </span>
+        <span class="cover__year eyebrow">{year}</span>
+      </div>
+
+      <span class="cover__numeral serif">{index}</span>
+
+      <div class="cover__bottom">
+        <p class="cover__title serif">{title}</p>
+        {
+          technologies.length > 0 && (
+            <p class="cover__tech eyebrow">{technologies.join(' / ')}</p>
+          )
+        }
+      </div>
+    </div>
+  )
+}
+
+<style>
+  .cover {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    aspect-ratio: 16 / 10;
+    padding: clamp(1rem, 2.4vw, 2rem);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background:
+      radial-gradient(
+        120% 90% at 85% 0%,
+        rgba(232, 173, 50, 0.11) 0%,
+        transparent 55%
+      ),
+      radial-gradient(
+        100% 100% at 10% 100%,
+        rgba(243, 241, 236, 0.05) 0%,
+        transparent 60%
+      ),
+      linear-gradient(155deg, #1d1d1c 0%, #121211 55%, #0e0e0d 100%);
+    color: var(--color-text-light);
+  }
+
+  .cover--featured {
+    aspect-ratio: 16 / 11;
+  }
+
+  .cover__rule {
+    position: absolute;
+    background: rgba(243, 241, 236, 0.08);
+    pointer-events: none;
+  }
+
+  .cover__rule--v1,
+  .cover__rule--v2 {
+    top: 0;
+    bottom: 0;
+    width: 1px;
+  }
+
+  .cover__rule--v1 {
+    left: 33.333%;
+  }
+
+  .cover__rule--v2 {
+    left: 66.666%;
+  }
+
+  .cover__rule--h {
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 1px;
+  }
+
+  .cover__top {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-4);
+    color: var(--color-text-muted-light);
+  }
+
+  .cover__label {
+    max-width: 70%;
+    font-size: var(--text-caption);
+  }
+
+  .cover__year {
+    font-size: var(--text-caption);
+  }
+
+  .cover__numeral {
+    position: absolute;
+    right: clamp(-0.5rem, 1vw, 1rem);
+    top: 50%;
+    z-index: 1;
+    font-size: clamp(11rem, 25vw, 21rem);
+    line-height: 0.72;
+    letter-spacing: -0.06em;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(243, 241, 236, 0.19);
+    transform: translateY(-48%);
+    transition:
+      transform var(--duration-slow) var(--ease-cinematic),
+      opacity var(--duration-slow) var(--ease-cinematic);
+    pointer-events: none;
+  }
+
+  .cover--default .cover__numeral {
+    font-size: clamp(8rem, 16vw, 13rem);
+  }
+
+  .cover__bottom {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    max-width: 72%;
+  }
+
+  .cover__title {
+    font-size: clamp(1.5rem, 2.8vw, 2.4rem);
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+
+  .cover__title::after {
+    content: '.';
+    color: var(--color-accent);
+  }
+
+  .cover--default .cover__title {
+    font-size: clamp(1.35rem, 2vw, 1.8rem);
+  }
+
+  .cover__tech {
+    color: var(--color-text-muted-light);
+    font-size: var(--text-caption);
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  :global(.project-card:hover) .cover__numeral,
+  :global(.project-card:focus-within) .cover__numeral {
+    transform: translateY(-48%) scale(1.015);
+  }
+
+  @media (max-width: 640px) {
+    .cover {
+      aspect-ratio: 4 / 3;
+    }
+
+    .cover--featured {
+      aspect-ratio: 4 / 3;
+    }
+
+    .cover__numeral {
+      font-size: clamp(8rem, 38vw, 12rem);
+    }
+
+    .cover__title {
+      font-size: clamp(1.4rem, 6vw, 2rem);
+    }
+
+    .cover__tech {
+      white-space: normal;
+    }
+
+    .cover__bottom {
+      max-width: 82%;
+    }
+  }
+</style>

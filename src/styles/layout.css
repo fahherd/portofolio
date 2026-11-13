@@ -1,0 +1,123 @@
+.container {
+  width: min(
+    calc(100% - 2 * var(--container-padding)),
+    var(--container-width)
+  );
+  margin-inline: auto;
+}
+
+.container--narrow {
+  width: min(
+    calc(100% - 2 * var(--container-padding)),
+    var(--container-narrow, 1120px)
+  );
+  margin-inline: auto;
+}
+
+.editorial-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--grid-gap);
+}
+
+.editorial-grid > * {
+  min-width: 0;
+}
+
+.section-heading {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--grid-gap);
+  margin-bottom: clamp(3rem, 6vw, 6rem);
+}
+
+.section-heading__marker {
+  grid-column: 1 / span 3;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-top: var(--space-2);
+}
+
+.section-heading__index {
+  color: var(--accent-text);
+}
+
+.section-heading__title {
+  grid-column: 4 / span 7;
+}
+
+.section-heading__lede {
+  grid-column: 4 / span 5;
+  margin-top: var(--space-6);
+  color: var(--muted);
+}
+
+.section-heading--wide .section-heading__title {
+  grid-column: 3 / span 10;
+}
+
+.section-heading--centered {
+  justify-items: start;
+}
+
+.rule {
+  border: 0;
+  border-top: 1px solid var(--border);
+}
+
+@media (max-width: 1024px) {
+  .editorial-grid {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+
+  .section-heading {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+
+  .section-heading__marker {
+    grid-column: 1 / span 2;
+  }
+
+  .section-heading__title {
+    grid-column: 3 / span 6;
+  }
+
+  .section-heading__lede {
+    grid-column: 3 / span 5;
+  }
+
+  .section-heading--wide .section-heading__title {
+    grid-column: 1 / span 8;
+  }
+}
+
+@media (max-width: 640px) {
+  .editorial-grid,
+  .section-heading {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .section-heading {
+    margin-bottom: var(--space-10);
+  }
+
+  .section-heading__marker,
+  .section-heading__title,
+  .section-heading__lede,
+  .section-heading--wide .section-heading__title {
+    grid-column: 1 / -1;
+  }
+
+  .section-heading__marker {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-3);
+    padding-top: 0;
+    margin-bottom: var(--space-2);
+  }
+
+  .section-heading__lede {
+    margin-top: var(--space-4);
+  }
+}

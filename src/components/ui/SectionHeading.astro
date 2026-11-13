@@ -1,0 +1,36 @@
+---
+interface Props {
+  number: string;
+  label: string;
+  title: string;
+  lede?: string;
+  class?: string;
+  wide?: boolean;
+}
+
+const {
+  number,
+  label,
+  title,
+  lede,
+  class: className,
+  wide = false,
+} = Astro.props;
+---
+
+<header
+  class:list={[
+    'section-heading',
+    { 'section-heading--wide': wide },
+    className,
+  ]}
+>
+  <div class="section-heading__marker">
+    <span class="eyebrow section-heading__index">[{number}]</span>
+    <span class="eyebrow">/ {label}</span>
+  </div>
+  <div class="section-heading__title">
+    <h2 class="display display--md">{title}</h2>
+    {lede && <p class="section-heading__lede body-lg">{lede}</p>}
+  </div>
+</header>

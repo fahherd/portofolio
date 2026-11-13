@@ -1,0 +1,430 @@
+---
+import type { Locale } from '../../i18n/config';
+import { getUI } from '../../i18n/ui';
+import {
+  education,
+  awards,
+  certifications,
+  organizations,
+} from '../../data/cv';
+import { formatRange } from '../../utils/dates';
+import SectionHeading from '../ui/SectionHeading.astro';
+import ExperienceTimeline from './ExperienceTimeline.astro';
+import Icon from '../ui/Icon.astro';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const ui = getUI(locale);
+---
+
+<section id="recognition" class="section section--dark-elevated recognition">
+  <div class="container">
+    <SectionHeading
+      number="05"
+      label={ui.sections.recognition.label}
+      title={ui.sections.recognition.title}
+      lede={ui.sections.recognition.lede}
+      wide
+    />
+
+    <div class="recognition__grid">
+      <div class="recognition__column">
+        <section class="recognition__block" aria-labelledby="recognition-education">
+          <h3 class="recognition__subhead" id="recognition-education">
+            <span class="eyebrow recognition__num">[01]</span>
+            <span class="serif recognition__subtitle">
+              {ui.recognition.education}
+            </span>
+          </h3>
+
+          <ul class="education">
+            {
+              education.map((entry) => (
+                <li class="education__item" data-reveal>
+                  <div class="education__top">
+                    <span class="eyebrow">
+                      {formatRange(
+                        entry.period.start,
+                        entry.period.end,
+                        locale,
+                        ui.labels.present,
+                      )}
+                    </span>
+                    {entry.grade && (
+                      <span class="eyebrow education__grade">
+                        {ui.labels.gpa}: 3.75
+                      </span>
+                    )}
+                  </div>
+                  <h4 class="education__institution serif">
+                    {entry.institution}
+                  </h4>
+                  <p class="education__degree">{entry.degree[locale]}</p>
+                  {entry.organization && (
+                    <p class="eyebrow education__org">
+                      {ui.recognition.organizationLabel}: {entry.organization}
+                    </p>
+                  )}
+                </li>
+              ))
+            }
+          </ul>
+        </section>
+
+        <section class="recognition__block" aria-labelledby="recognition-awards">
+          <h3 class="recognition__subhead" id="recognition-awards">
+            <span class="eyebrow recognition__num">[02]</span>
+            <span class="serif recognition__subtitle">
+              {ui.recognition.awards}
+            </span>
+          </h3>
+
+          <ul class="awards">
+            {
+              awards.map((award) => (
+                <li class="awards__item" data-reveal>
+                  <span class="awards__year serif">{award.year}</span>
+                  <div class="awards__body">
+                    <h4 class="awards__title">{award.title[locale]}</h4>
+                    <p class="awards__event">{award.event}</p>
+                    <p class="eyebrow awards__institution">
+                      {award.institution}
+                    </p>
+                  </div>
+                </li>
+              ))
+            }
+          </ul>
+        </section>
+      </div>
+
+      <section
+        class="recognition__block recognition__block--certifications"
+        aria-labelledby="recognition-certifications"
+      >
+        <h3 class="recognition__subhead" id="recognition-certifications">
+          <span class="eyebrow recognition__num">[03]</span>
+          <span class="serif recognition__subtitle">
+            {ui.recognition.certifications}
+          </span>
+        </h3>
+
+        <ul class="certifications">
+          {
+            certifications.map((cert, index) => (
+              <li class="certifications__item" data-reveal>
+                <span class="eyebrow certifications__index">
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+
+                <div class="certifications__main">
+                  <h4 class="certifications__name">{cert.name}</h4>
+                  {cert.issuer && (
+                    <p class="eyebrow certifications__issuer">{cert.issuer}</p>
+                  )}
+                </div>
+
+                <div class="certifications__meta">
+                  <span class="eyebrow certifications__period">
+                    {formatRange(
+                      cert.period.start,
+                      cert.period.end,
+                      locale,
+                      ui.labels.present,
+                    )}
+                  </span>
+                  {cert.status === 'historical' ? (
+                    <span class="certifications__badge">
+                      {ui.recognition.statusHistorical}
+                    </span>
+                  ) : (
+                    <span class="certifications__badge certifications__badge--muted">
+                      <Icon name="check" size={11} />
+                      {ui.recognition.statusCompleted}
+                    </span>
+                  )}
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+    </div>
+
+    <section
+      class="recognition__block recognition__block--organizations"
+      aria-labelledby="recognition-organizations"
+    >
+      <h3 class="recognition__subhead" id="recognition-organizations">
+        <span class="eyebrow recognition__num">[04]</span>
+        <span class="serif recognition__subtitle">
+          {ui.recognition.organizations}
+        </span>
+      </h3>
+
+      <ExperienceTimeline
+        locale={locale}
+        entries={organizations}
+        variant="organization"
+      />
+    </section>
+  </div>
+</section>
+
+<style>
+  .recognition {
+    border-top: 1px solid var(--border-dark);
+  }
+
+  .recognition__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(3rem, 6vw, 6rem);
+    align-items: start;
+  }
+
+  .recognition__column {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(3rem, 5vw, 5rem);
+  }
+
+  .recognition__block {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  .recognition__block--certifications {
+    padding-left: clamp(0rem, 3vw, 3rem);
+    border-left: 1px solid var(--border);
+  }
+
+  .recognition__block--organizations {
+    margin-top: clamp(3.5rem, 7vw, 7rem);
+    padding-top: clamp(2.5rem, 4vw, 4rem);
+    border-top: 1px solid var(--border);
+  }
+
+  .recognition__subhead {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-3);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--border);
+    font-weight: 400;
+  }
+
+  .recognition__num {
+    color: var(--accent-text);
+  }
+
+  .recognition__subtitle {
+    font-size: clamp(1.5rem, 2.4vw, 2rem);
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+  }
+
+  .education {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .education__item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .education__top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-2) var(--space-4);
+    color: var(--muted);
+    margin-bottom: var(--space-1);
+  }
+
+  .education__grade {
+    color: var(--accent-text);
+  }
+
+  .education__institution {
+    font-size: clamp(1.3rem, 2vw, 1.6rem);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+
+  .education__degree {
+    color: var(--muted);
+    font-size: var(--text-body-sm);
+  }
+
+  .education__org {
+    color: var(--muted);
+    margin-top: var(--space-1);
+  }
+
+  .awards {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .awards__item {
+    display: grid;
+    grid-template-columns: 4.5rem minmax(0, 1fr);
+    gap: var(--space-4);
+    padding-block: var(--space-4);
+    border-top: 1px solid var(--border);
+  }
+
+  .awards__item:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+
+  .awards__year {
+    font-size: 1.35rem;
+    color: var(--accent-text);
+    line-height: 1.2;
+  }
+
+  .awards__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .awards__title {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 400;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+  }
+
+  .awards__event {
+    color: var(--muted);
+    font-size: var(--text-body-sm);
+    line-height: 1.5;
+  }
+
+  .awards__institution {
+    color: var(--muted);
+  }
+
+  .certifications {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .certifications__item {
+    display: grid;
+    grid-template-columns: 2rem minmax(0, 1fr) auto;
+    gap: var(--space-3) var(--space-4);
+    align-items: start;
+    padding-block: var(--space-4);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .certifications__item:first-child {
+    padding-top: 0;
+  }
+
+  .certifications__index {
+    color: var(--muted);
+    padding-top: 0.2em;
+  }
+
+  .certifications__main {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .certifications__name {
+    font-size: var(--text-body-sm);
+    font-weight: 500;
+    line-height: 1.45;
+    color: var(--text);
+  }
+
+  .certifications__issuer {
+    color: var(--muted);
+  }
+
+  .certifications__meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--space-2);
+  }
+
+  .certifications__period {
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .certifications__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.15rem 0.4rem;
+    border: 1px solid var(--color-warning);
+    color: var(--color-accent);
+    font-family: var(--font-mono);
+    font-size: var(--text-caption);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .certifications__badge--muted {
+    border-color: var(--border);
+    color: var(--muted);
+  }
+
+  .recognition :global(.timeline) {
+    border-top: 0;
+  }
+
+  @media (max-width: 1024px) {
+    .recognition__grid {
+      grid-template-columns: 1fr;
+      gap: clamp(3rem, 6vw, 4rem);
+    }
+
+    .recognition__block--certifications {
+      padding-left: 0;
+      padding-top: clamp(3rem, 6vw, 4rem);
+      border-left: 0;
+      border-top: 1px solid var(--border);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .certifications__item {
+      grid-template-columns: 1.5rem minmax(0, 1fr);
+    }
+
+    .certifications__meta {
+      grid-column: 2;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .awards__item {
+      grid-template-columns: 1fr;
+      gap: var(--space-2);
+    }
+  }
+</style>
